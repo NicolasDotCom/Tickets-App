@@ -1,6 +1,15 @@
-# 🎟️ Sistema de Tickets -
+# 🎟️ Sistema de Tickets TES LTDA
 
-Bienvenido al proyecto del **Sistema de Tickets** desarrollado con Laravel 12, Inertia y React.  
+Bienvenido al **Sistema de Tickets de TES LTDA**, una aplicación web moderna desarrollada con Laravel 11, Inertia.js y React con tema oscuro minimalista.
+
+## 🌟 Características
+
+- **🎨 Tema oscuro minimalista**: Interfaz moderna con fondo negro y tarjetas grises
+- **🔐 Sistema de autenticación**: Login, registro y recuperación de contraseña
+- **📱 Diseño responsivo**: Optimizado para escritorio y dispositivos móviles
+- **🇪🇸 Interfaz en español**: Todas las etiquetas y mensajes en español
+- **🏢 Branding TES LTDA**: Logo personalizado y branding corporativo
+- **⚡ Tecnología moderna**: Laravel 11 + Inertia.js + React + TypeScript
 
 ---
 
