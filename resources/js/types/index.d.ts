@@ -50,6 +50,7 @@ export interface Customer {
     name: string;
     email: string;
     phone: string;
+    company?: string;
     address: string;
     created_at: string;
     updated_at: string;
@@ -71,6 +72,11 @@ export interface Ticket {
     id:number;
     customer_id: number;
     support_id: number | null;
+    attachment?: string;
+    equipment_category?: string;
+    equipment_name?: string;
+    equipment_serial?: string;
+    equipment_area?: string;
     description: string;
     status: 'Open' | 'In Progress' | 'Closed';
     created_at: string;

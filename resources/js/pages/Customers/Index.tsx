@@ -21,7 +21,7 @@ import { normalizePaginatedData } from '@/utils/pagination';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Customers',
+        title: 'Clientes',
         href: '/customers',
     },
 ];
@@ -42,23 +42,27 @@ export default function Index() {
         },
         {
             accessorKey: 'name',
-            header: 'Name',
+            header: 'Nombre',
         },
         {
             accessorKey: 'email',
-            header: 'Email',
+            header: 'Correo',
         },
         {
             accessorKey: 'phone',
-            header: 'Phone',
+            header: 'Teléfono',
+        },
+        {
+            accessorKey: 'company',
+            header: 'Empresa',
         },
         {
             accessorKey: 'address',
-            header: 'Address',
+            header: 'Dirección',
         },
         {
             id: 'actions',
-            header: 'Actions',
+            header: 'Acciones',
             cell: ({ row }) => {
                 const customer = row.original;
                 return (
@@ -105,13 +109,13 @@ export default function Index() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Customers" />
+            <Head title="Clientes" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Customers</h1>
+                    <h1 className="text-2xl font-bold">Clientes</h1>
                     <Link href={route('customers.create')}>
                         <Button>
-                            <Plus className='mr-2 h-4 w-4' /> Add Customer
+                            <Plus className='mr-2 h-4 w-4' /> Agregar Cliente
                         </Button>
                     </Link>
                 </div>
@@ -127,26 +131,26 @@ export default function Index() {
                         onPageChange: handlePageChange,
                     }}
                     onSearch={handleSearch}
-                    searchPlaceholder='Search ...'
+                    searchPlaceholder='Buscar...'
                 />
 
                 {/* ✅ Dialog fuera del loop, muestra si tiene tickets */}
                 <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 {selectedCustomer?.tickets_count && selectedCustomer.tickets_count > 0 ? (
                                     <span className="text-red-600 font-semibold">
-                                        This customer has {selectedCustomer.tickets_count} ticket{selectedCustomer.tickets_count > 1 ? 's' : ''}. Deleting will also remove all associated tickets.
+                                        Este cliente tiene {selectedCustomer.tickets_count} ticket{selectedCustomer.tickets_count > 1 ? 's' : ''}. Al eliminar también se removerán todos los tickets asociados.
                                     </span>
                                 ) : (
-                                    'The record will be permanently deleted.'
+                                    'El registro será eliminado permanentemente.'
                                 )}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
 
                             <AlertDialogAction
                                 onClick={() => {
@@ -159,7 +163,7 @@ export default function Index() {
                                     }
                                 }}
                             >
-                                Delete
+                                Eliminar
                             </AlertDialogAction>
 
                         </AlertDialogFooter>

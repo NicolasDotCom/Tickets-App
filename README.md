@@ -9,7 +9,7 @@ Bienvenido al **Sistema de Tickets de TES LTDA**, una aplicación web moderna de
 - **📱 Diseño responsivo**: Optimizado para escritorio y dispositivos móviles
 - **🇪🇸 Interfaz en español**: Todas las etiquetas y mensajes en español
 - **🏢 Branding TES LTDA**: Logo personalizado y branding corporativo
-- **⚡ Tecnología moderna**: Laravel 11 + Inertia.js + React + TypeScript
+- **⚡ Tecnología moderna**: Laravel 12 + Inertia.js + React + TypeScript
 
 ---
 

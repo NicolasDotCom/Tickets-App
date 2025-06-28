@@ -66,15 +66,29 @@ class TicketController extends Controller
             $validated = $request->validate([
                 'customer_id' => 'required|exists:customers,id',
                 'support_id' => 'nullable|exists:supports,id',
+                'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,mp4,avi,mov|max:10240', // 10MB máximo
+                'equipment_category' => 'nullable|string|max:100',
+                'equipment_name' => 'nullable|string|max:255',
+                'equipment_serial' => 'nullable|string|max:100',
+                'equipment_area' => 'nullable|string|max:100',
                 'description' => 'required|string',
                 'status' => 'required|in:open,in progress,closed'
             ]);
+
+            // Manejar la subida del archivo
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('tickets/attachments', $fileName, 'public');
+                $validated['attachment'] = $filePath;
+            }
+
             Ticket::create($validated);
             return redirect()
                 ->route('tickets.index')
-                ->with('success', 'Registry created successfully!');
+                ->with('success', '¡Ticket creado exitosamente!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An unexpected error occurred: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error inesperado: ' . $e->getMessage());
         }
     }
 
@@ -108,21 +122,39 @@ class TicketController extends Controller
     {
         try {
             $validated = $request->validate([
-                //'customer_id' => 'required|exists:customers,id',
+                //'customer_id' => 'required|exists:customers,id', // No permitimos cambiar el cliente
                 'support_id' => 'nullable|exists:supports,id',
+                'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,mp4,avi,mov|max:10240',
+                'equipment_category' => 'nullable|string|max:100',
+                'equipment_name' => 'nullable|string|max:255',
+                'equipment_serial' => 'nullable|string|max:100',
+                'equipment_area' => 'nullable|string|max:100',
                 'description' => 'required|string',
                 'status' => 'required|in:open,in progress,closed'
             ]);
+
+            // Manejar la subida del archivo si se proporciona uno nuevo
+            if ($request->hasFile('attachment')) {
+                // Eliminar el archivo anterior si existe
+                if ($ticket->attachment && \Storage::disk('public')->exists($ticket->attachment)) {
+                    \Storage::disk('public')->delete($ticket->attachment);
+                }
+                
+                $file = $request->file('attachment');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('tickets/attachments', $fileName, 'public');
+                $validated['attachment'] = $filePath;
+            }
 
             $ticket->update($validated);
 
             return redirect()
                 ->route('tickets.index')
-                ->with('success', 'Record updated successfully!');
+                ->with('success', '¡Ticket actualizado exitosamente!');
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Could not update the record: ' . $e->getMessage());
+                ->with('error', 'No se pudo actualizar el registro: ' . $e->getMessage());
         }
     }
 

@@ -21,6 +21,8 @@ class TicketFactory extends Factory
 
     public function definition(): array
     {
+        $categories = ['computador', 'laptop', 'impresora', 'escaner', 'multifuncional', 'monitor', 'teclado', 'mouse', 'telefono', 'tablet'];
+        
         return [
             'customer_id' => Customer::query()->exists()
                 ? Customer::query()->inRandomOrder()->first()->id
@@ -28,19 +30,13 @@ class TicketFactory extends Factory
             'support_id' => Support::query()->exists()
                 ? Support::query()->inRandomOrder()->first()->id
                 : Support::factory(),
-            'description' => $this->faker->sentence,
+            'attachment' => null, // No generamos archivos falsos
+            'equipment_category' => $this->faker->randomElement($categories),
+            'equipment_name' => $this->faker->words(3, true),
+            'equipment_serial' => $this->faker->bothify('???###***'),
+            'equipment_area' => $this->faker->randomElement(['Contabilidad', 'Recursos Humanos', 'Ventas', 'IT', 'Gerencia', 'Recepción']),
+            'description' => $this->faker->paragraph,
             'status' => $this->faker->randomElement(['Open', 'In Progress', 'Closed']),
         ];
-
-
-        /* $customer = Customer::factory()->create();
-        $support = Support::factory()->create();
-
-        return [
-            'customer_id' => $customer->id,
-            'support_id' => $support->id,
-            'description' => $this->faker->sentence,
-            'status' => $this->faker->randomElement(['Open', 'In Progress', 'Closed']),
-        ]; */
     }
 }

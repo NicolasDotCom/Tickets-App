@@ -9,11 +9,11 @@ import { Loader2 } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Customers',
+        title: 'Clientes',
         href: '/customers',
     },
     {
-        title: 'Edit',
+        title: 'Editar',
         href: '',
     },
 ];
@@ -28,6 +28,7 @@ export default function Edit({customer}:EditProps) {
         name: customer.name || '',
         email: customer.email || '',
         phone: customer.phone || '',
+        company: customer.company || '',
         address: customer.address || '',
     });
 
@@ -40,9 +41,10 @@ export default function Edit({customer}:EditProps) {
         if(  data.name !== customer.name ||
              data.email !== customer.email ||
              data.phone !== customer.phone ||
+             data.company !== customer.company ||
              data.address !== customer.address
         ){
-            if(!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) {
+            if(!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
                 return;
             }
         }
@@ -51,15 +53,15 @@ export default function Edit({customer}:EditProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Edit Customer" />
+            <Head title="Editar Cliente" />
             <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Edit Customer</h1>
+                <h1 className="text-2xl font-bold">Editar Cliente</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
-                        <CardHeader>Customer Information</CardHeader>
+                        <CardHeader>Información del Cliente</CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Nombre Completo</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
@@ -71,7 +73,7 @@ export default function Edit({customer}:EditProps) {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">Correo Electrónico</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -83,7 +85,7 @@ export default function Edit({customer}:EditProps) {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="phone">Phone</Label>
+                                <Label htmlFor="phone">Número de Teléfono</Label>
                                 <Input
                                     id="phone"
                                     value={data.phone}
@@ -94,7 +96,18 @@ export default function Edit({customer}:EditProps) {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="address">Address</Label>
+                                <Label htmlFor="company">Empresa</Label>
+                                <Input
+                                    id="company"
+                                    value={data.company}
+                                    onChange={(e) => setData('company', e.target.value)}
+                                    disabled={processing}
+                                />
+                                {errors.company && <p className="text-sm text-red-500">{errors.company}</p>}
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                                <Label htmlFor="address">Dirección de Contacto</Label>
                                 <Input
                                     id="address"
                                     value={data.address}
@@ -111,7 +124,7 @@ export default function Edit({customer}:EditProps) {
                                 variant="outline"
                                 onClick={handleCancel}
                             >
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button
                                 type='submit'
@@ -120,10 +133,10 @@ export default function Edit({customer}:EditProps) {
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Saving...
+                                        Actualizando...
                                     </div>
                                 ) : (
-                                    'Update'
+                                    'Actualizar'
                                 )}
 
                             </Button>

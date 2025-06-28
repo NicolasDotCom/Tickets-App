@@ -9,11 +9,11 @@ import { Loader2 } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Customers',
+        title: 'Clientes',
         href: '/customers',
     },
     {
-        title: 'Create',
+        title: 'Crear',
         href: '',
     },
 ];
@@ -23,6 +23,7 @@ export default function Create() {
         name: '',
         email: '',
         phone: '',
+        company: '',
         address: '',
     });
 
@@ -32,8 +33,8 @@ export default function Create() {
     };
 
     const handleCancel = () => {
-        if(data.name || data.email || data.phone || data.address){
-            if(!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) {
+        if(data.name || data.email || data.phone || data.company || data.address){
+            if(!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
                 return;
             }
         }
@@ -41,15 +42,15 @@ export default function Create() {
     }
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Customer" />
+            <Head title="Crear Cliente" />
             <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Create Customer</h1>
+                <h1 className="text-2xl font-bold">Crear Cliente</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
-                        <CardHeader>Customer Information</CardHeader>
+                        <CardHeader>Información del Cliente</CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Nombre Completo</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
@@ -61,7 +62,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">Correo Electrónico</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -73,7 +74,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="phone">Phone</Label>
+                                <Label htmlFor="phone">Número de Teléfono</Label>
                                 <Input
                                     id="phone"
                                     value={data.phone}
@@ -84,7 +85,18 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="address">Address</Label>
+                                <Label htmlFor="company">Empresa</Label>
+                                <Input
+                                    id="company"
+                                    value={data.company}
+                                    onChange={(e) => setData('company', e.target.value)}
+                                    disabled={processing}
+                                />
+                                {errors.company && <p className="text-sm text-red-500">{errors.company}</p>}
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                                <Label htmlFor="address">Dirección de Contacto</Label>
                                 <Input
                                     id="address"
                                     value={data.address}
@@ -101,7 +113,7 @@ export default function Create() {
                                 variant="outline"
                                 onClick={handleCancel}
                             >
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button
                                 type='submit'
@@ -110,10 +122,10 @@ export default function Create() {
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Saving...
+                                        Guardando...
                                     </div>
                                 ) : (
-                                    'Save'
+                                    'Guardar'
                                 )}
 
                             </Button>

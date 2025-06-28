@@ -21,6 +21,7 @@ class CustomerController extends Controller
                  $query->where('name', 'like', "%{$search}%")
                        ->orWhere('email', 'like', "%{$search}%")
                        ->orWhere('phone', 'like', "%{$search}%")
+                       ->orWhere('company', 'like', "%{$search}%")
                        ->orWhere('address', 'like', "%{$search}%");
             })
             ->paginate(10)
@@ -49,16 +50,17 @@ class CustomerController extends Controller
                 'name' => 'required|string|max:155',
                 'email' => 'required|email|unique:customers,email',
                 'phone' => 'nullable|string|max:20',
+                'company' => 'nullable|string|max:155',
                 'address' => 'nullable|string|max:255',
             ]);
             Customer::create($validated);
             return redirect()
                 ->route('customers.index')
-                ->with('info', '¡Record created successfully!');
+                ->with('info', '¡Registro creado exitosamente!');
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to create record: ' . $e->getMessage());
+                ->with('error', 'Error al crear el registro: ' . $e->getMessage());
         }
     }
 
@@ -90,16 +92,17 @@ class CustomerController extends Controller
                 'name' => 'required|string',
                 'email' => 'required|email|unique:customers,email,' . $customer->id,
                 'phone' => 'nullable|string',
+                'company' => 'nullable|string|max:155',
                 'address' => 'nullable|string',
             ]);
             $customer->update($validated);
             return redirect()
                 ->route('customers.index')
-                ->with('success', '¡Record updated successfully!');
+                ->with('success', '¡Registro actualizado exitosamente!');
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Failed to create record: ' . $e->getMessage());
+                ->with('error', 'Error al actualizar el registro: ' . $e->getMessage());
         }
     }
 

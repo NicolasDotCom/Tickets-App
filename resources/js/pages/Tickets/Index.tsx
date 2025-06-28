@@ -55,33 +55,47 @@ export default function Index() {
         },
         {
             accessorKey: 'customer.id',
-            header: 'Customer',
-            cell: ({row}) => row.original.customer?.name || 'Unassigned'
+            header: 'Cliente',
+            cell: ({row}) => row.original.customer?.name || 'Sin asignar'
         },
         {
             accessorKey: 'support.id',
-            header: 'Technical Support',
-            cell: ({row}) => row.original.support?.name || 'Unassigned'
+            header: 'Soporte Técnico',
+            cell: ({row}) => row.original.support?.name || 'Sin asignar'
+        },
+        {
+            accessorKey: 'equipment_category',
+            header: 'Categoría',
+            cell: ({row}) => row.original.equipment_category || 'N/A'
         },
         {
             accessorKey: 'description',
-            header: 'Description'
+            header: 'Descripción',
+            cell: ({row}) => {
+                const description = row.original.description;
+                return description.length > 50 ? `${description.substring(0, 50)}...` : description;
+            }
         },
         {
             accessorKey: 'status',
-            header: 'State',
+            header: 'Estado',
             cell: ({row}) => {
                 const status = row.original.status;
+                const statusLabels = {
+                    'Open': 'Abierto',
+                    'In Progress': 'En Progreso', 
+                    'Closed': 'Cerrado'
+                };
                 return (
                     <Badge variant={getStatus(status)} className='capitalize'>
-                        {status}
+                        {statusLabels[status] || status}
                     </Badge>
                 )
             }
         },
         {
             id: 'actions',
-            header: 'Actions',
+            header: 'Acciones',
             cell: ({ row }) => {
                 const ticket = row.original;
                 return (
@@ -158,7 +172,7 @@ export default function Index() {
                     <h1 className="text-2xl font-bold">Tickets</h1>
                     <Link href={route('tickets.create')}>
                         <Button>
-                            <Plus className='mr-2 h-4 w-4' /> Add Ticket
+                            <Plus className='mr-2 h-4 w-4' /> Agregar Ticket
                         </Button>
                     </Link>
                 </div>
@@ -174,7 +188,7 @@ export default function Index() {
                         onPageChange: handlePageChange,
                     }}
                     onSearch={handleSearch}
-                    searchPlaceholder='Search...'
+                    searchPlaceholder='Buscar...'
                 />
             </div>
         </AppLayout>

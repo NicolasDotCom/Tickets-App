@@ -12,6 +12,11 @@ class Ticket extends Model
     protected $fillable = [
         'customer_id',
         'support_id',
+        'attachment',
+        'equipment_category',
+        'equipment_name',
+        'equipment_serial',
+        'equipment_area',
         'description',
         'status',
     ];
