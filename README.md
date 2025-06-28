@@ -10,6 +10,33 @@ Bienvenido al **Sistema de Tickets de TES LTDA**, una aplicación web moderna de
 - **🇪🇸 Interfaz en español**: Todas las etiquetas y mensajes en español
 - **🏢 Branding TES LTDA**: Logo personalizado y branding corporativo
 - **⚡ Tecnología moderna**: Laravel 12 + Inertia.js + React + TypeScript
+- **📎 Gestión de adjuntos**: Subida de archivos (fotos, videos, documentos) en tickets
+- **👥 Gestión avanzada**: Asignación de clientes y técnicos de soporte
+- **🔧 Categorización de equipos**: Clasificación por categoría, nombre, serial y área
+- **📊 Estados de tickets**: Seguimiento completo (Abierto, En Progreso, Cerrado)
+
+---
+
+## 🎯 Funcionalidades Principales
+
+### 📋 Gestión de Tickets
+- **Creación completa**: Formulario con todos los campos necesarios
+- **Adjuntos**: Subida de archivos (imágenes, videos, documentos PDF, Word, etc.)
+- **Asignación**: Selección de cliente y técnico de soporte
+- **Categorización**: Clasificación del equipo por tipo
+- **Datos del equipo**: Nombre/referencia, número de serie, área
+- **Estados**: Control de flujo (Abierto → En Progreso → Cerrado)
+- **Edición**: Modificación completa incluyendo cambio de adjuntos
+
+### 👥 Gestión de Clientes
+- **Información completa**: Nombre, email, teléfono, dirección
+- **Campo empresa**: Asociación con empresa o institución
+- **Relación con tickets**: Visualización de tickets asignados
+
+### 🔧 Gestión de Soporte Técnico
+- **Perfil completo**: Datos personales y de contacto
+- **Asignación de tickets**: Control de carga de trabajo
+- **Seguimiento**: Tickets asignados por técnico
 
 ---
 
@@ -97,15 +124,21 @@ Registra un usuario cualquiera
 
 ## 🧭 ¿Qué incluye este proyecto?
 
-- Laravel 12
+- Laravel 11
 - Inertia.js + React 19
 - CRUD completo de:
-  - Clientes
-  - Técnicos de soporte
-  - Tickets
+  - **Clientes** (con campo empresa)
+  - **Técnicos de soporte**
+  - **Tickets** (con adjuntos, categorías de equipo y estados)
+- **Gestión de archivos adjuntos** (fotos, videos, documentos)
+- **Categorización de equipos** (Hardware, Software, Red, Impresoras, etc.)
+- **Estados de tickets** (Abierto, En Progreso, Cerrado)
+- **Datos del equipo** (nombre/referencia, serial, área)
+- **Asignación** de clientes y técnicos
 - Relaciones entre entidades
 - Eliminación con control de dependencias
 - Flash messages globales
+- Interfaz completamente en español
 - Estructura limpia para aprender o escalar
 
 ## ⚠️ Licencia
