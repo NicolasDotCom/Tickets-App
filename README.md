@@ -92,6 +92,22 @@ DB_USERNAME=root
 DB_PASSWORD=
 
 
+APP_TIMEZONE=America/Bogota
+APP_LOCALE=es_CO
+APP_FALLBACK_LOCALE=es_CO
+APP_FAKER_LOCALE=es_CO
+
+
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=xxxxxx@gmail.com
+MAIL_PASSWORD=xxxxxxxxx
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+
 Luego, asegurate de crear la base de datos `tickets_tesltda` en tu sistema (puedes hacerlo desde phpMyAdmin, MySQL Workbench, o con consola).
 
 ### 6. **Ejecutar migraciones y seeders**
@@ -121,10 +137,160 @@ http://localhost:8000
 
 Registra un usuario cualquiera
 
+---
+
+## 🌐 Despliegue en Coolify
+
+### 📋 Prerrequisitos
+
+Antes de desplegar en Coolify, asegurate de tener:
+
+1. **Servidor con Coolify instalado** (VPS/Dedicado)
+2. **Dominio configurado** apuntando a tu servidor
+3. **Repositorio Git** con el código del proyecto
+
+### 🔧 Configuración en Coolify
+
+#### 1. **Crear nueva aplicación**
+
+1. Accede a tu panel de Coolify
+2. Ve a **"Projects"** → **"Create New Project"**
+3. Selecciona **"Git Repository"**
+4. Conecta tu repositorio (GitHub, GitLab, etc.)
+
+#### 2. **Configurar el proyecto**
+
+**Configuración básica:**
+- **Build Pack**: `Docker`
+- **Dockerfile**: `./Dockerfile` (usar el Dockerfile incluido)
+- **Port**: `80`
+- **Health Check Path**: `/`
+
+#### 3. **Variables de entorno**
+
+Configura las siguientes variables de entorno en Coolify:
+
+```bash
+# Aplicación
+APP_NAME="Sistema Tickets TES LTDA"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://tu-dominio.com
+APP_TIMEZONE=America/Bogota
+APP_LOCALE=es_CO
+APP_FALLBACK_LOCALE=es_CO
+
+# Base de datos (Coolify proporcionará estos valores)
+DB_CONNECTION=mysql
+DB_HOST=<coolify-mysql-host>
+DB_PORT=3306
+DB_DATABASE=tickets_tesltda
+DB_USERNAME=<coolify-mysql-user>
+DB_PASSWORD=<coolify-mysql-password>
+
+# Correo electrónico
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tu-email@gmail.com
+MAIL_PASSWORD=tu_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="no-reply@tesltda.com"
+MAIL_FROM_NAME="Sistema Tickets TES LTDA"
+```
+
+#### 4. **Crear base de datos MySQL**
+
+1. En tu proyecto de Coolify, ve a **"Resources"**
+2. Haz clic en **"Add Resource"** → **"Database"** → **"MySQL"**
+3. Configura:
+   - **Database Name**: `tickets_tesltda`
+   - **Username**: `tickets` (o el que prefieras)
+   - **Password**: Genera una contraseña segura
+4. Coolify te proporcionará los datos de conexión
+
+#### 5. **Configurar dominio y SSL**
+
+1. Ve a **"Domains"** en tu aplicación
+2. Agrega tu dominio: `tickets.tu-dominio.com`
+3. Habilita **SSL automático** (Let's Encrypt)
+
+#### 6. **Desplegar**
+
+1. Haz clic en **"Deploy"**
+2. Coolify construirá la imagen Docker y desplegará automáticamente
+3. El script de inicialización ejecutará:
+   - Migraciones de base de datos
+   - Optimizaciones de caché
+   - Configuración de permisos
+
+### 🔄 Actualizaciones automáticas
+
+**Para habilitar despliegues automáticos:**
+
+1. Ve a **"Settings"** → **"Git"**
+2. Habilita **"Auto Deploy"**
+3. Selecciona la rama (normalmente `main` o `master`)
+
+Ahora cada vez que hagas `git push`, Coolify desplegará automáticamente.
+
+### 📊 Monitoreo
+
+**Coolify proporciona:**
+- **Logs en tiempo real**: Ve a "Logs" para ver los logs de la aplicación
+- **Métricas**: CPU, memoria, disco
+- **Health checks**: Monitoreo automático del estado
+- **Backups**: Configurar backups automáticos de la base de datos
+
+### 🛠️ Comandos útiles
+
+**Para ejecutar comandos en el contenedor:**
+
+```bash
+# Limpiar caché
+php artisan cache:clear
+
+# Ver logs
+php artisan queue:work
+
+# Ejecutar migraciones
+php artisan migrate
+```
+
+### 🔐 Seguridad
+
+**Configuraciones recomendadas:**
+
+1. **Firewall**: Solo abrir puertos 80, 443 y 22
+2. **SSL**: Let's Encrypt automático
+3. **Backups**: Configurar backups diarios de la base de datos
+4. **Monitoring**: Alertas por email si la aplicación está caída
+
+### 📱 Acceso
+
+Una vez desplegado exitosamente:
+
+- **URL**: `https://tu-dominio.com`
+- **Admin**: Registra el primer usuario (será admin automáticamente)
+- **Base de datos**: Accesible desde phpMyAdmin si lo configuraste
+
+### 🆘 Solución de problemas
+
+**Errores comunes:**
+
+1. **Error 500**: Verificar variables de entorno y permisos
+2. **Base de datos**: Verificar conexión en las variables de entorno
+3. **Assets no cargan**: Verificar que `APP_URL` sea correcto
+4. **Archivos no suben**: Verificar permisos de `storage/`
+
+Para más ayuda, revisa los logs en Coolify o contacta al soporte.
+
+---
+
 
 ## 🧭 ¿Qué incluye este proyecto?
 
-- Laravel 11
+- Laravel 12
 - Inertia.js + React 19
 - CRUD completo de:
   - **Clientes** (con campo empresa)

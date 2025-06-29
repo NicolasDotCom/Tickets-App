@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: tickets-tesltda
+    ports:
+      - "80:80"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=${APP_URL:-http://localhost}
+      - APP_TIMEZONE=America/Bogota
+      - APP_LOCALE=es_CO
+      - APP_FALLBACK_LOCALE=es_CO
+      - DB_CONNECTION=mysql
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_DATABASE=${DB_DATABASE:-tickets_tesltda}
+      - DB_USERNAME=${DB_USERNAME:-dbincoolify}
+      - DB_PASSWORD=${DB_PASSWORD:-hltzpxprwqgotzsz}
+      - MAIL_MAILER=${MAIL_MAILER:-smtp}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-tls}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-"Sistema Tickets TES LTDA"}
+    volumes:
+      - storage_data:/var/www/html/storage/app
+    depends_on:
+      - mysql
+    restart: unless-stopped
+  mysql:
+    image: mysql:8.0
+    container_name: tickets-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword123
+      - MYSQL_DATABASE=${DB_DATABASE:-tickets_tesltda}
+      - MYSQL_USER=${DB_USERNAME:-dbincoolify}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-hltzpxprwqgotzsz}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  mysql_data:
+  storage_data:
