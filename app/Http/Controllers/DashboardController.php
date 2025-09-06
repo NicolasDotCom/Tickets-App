@@ -138,7 +138,7 @@ class DashboardController extends Controller
             abort(403, 'No tienes permisos para exportar tickets.');
         }
 
-        $ticketIds = $request->input('ticket_ids', []);
+        $ticketIds = $request->input('ticket_ids', $request->input('tickets', []));
         
         // Si se envía "all", exportar todos los tickets
         if ($ticketIds === 'all') {

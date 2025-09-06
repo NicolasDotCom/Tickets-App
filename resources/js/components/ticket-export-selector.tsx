@@ -83,7 +83,7 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
         }
 
         router.get(route('dashboard.export-tickets'), {
-            tickets: selectedTickets.join(',')
+            ticket_ids: selectedTickets.join(',')
         });
         
         setIsOpen(false);
