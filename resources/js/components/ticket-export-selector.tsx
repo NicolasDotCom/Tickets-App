@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Download, Search, Filter, Calendar } from 'lucide-react';
-import { router } from '@inertiajs/react';
 import { Ticket } from '@/types';
 
 interface TicketExportSelectorProps {
@@ -82,9 +81,20 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
             return;
         }
 
-        router.get(route('dashboard.export-tickets'), {
-            ticket_ids: selectedTickets.join(',')
-        });
+        // Crear un link temporal para la descarga
+        const url = new URL(route('dashboard.export-tickets'), window.location.origin);
+        url.searchParams.append('ticket_ids', selectedTickets.join(','));
+        
+        // Crear elemento link temporal
+        const link = document.createElement('a');
+        link.href = url.toString();
+        link.download = `tickets_export_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.style.display = 'none';
+        
+        // Agregar al DOM, hacer clic y remover
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
         
         setIsOpen(false);
     };
