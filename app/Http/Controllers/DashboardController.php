@@ -87,7 +87,7 @@ class DashboardController extends Controller
         $isAdmin = $user && $user->hasRole('admin');
         $allTicketsData = $isAdmin ? $this->getAllTicketsForExport() : [];
         
-        return Inertia::render('Dashboard', [
+        return Inertia::render('DashboardNew', [
             'metricas' => [
                 'tickets_abiertos' => $ticketsAbiertos,
                 'tickets_en_progreso' => $ticketsEnProgreso,
