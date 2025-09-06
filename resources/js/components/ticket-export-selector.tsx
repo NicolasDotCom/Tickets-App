@@ -82,19 +82,9 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
             return;
         }
 
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = route('dashboard.export-tickets');
-        
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'tickets';
-        input.value = selectedTickets.join(',');
-        
-        form.appendChild(input);
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+        router.get(route('dashboard.export-tickets'), {
+            tickets: selectedTickets.join(',')
+        });
         
         setIsOpen(false);
     };

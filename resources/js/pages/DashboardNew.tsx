@@ -1,11 +1,40 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { PageProps, type BreadcrumbItem } from '@/types';
+import { PageProps, type BreadcrumbItem, Ticket } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Ticket, Clock, CheckCircle, Users } from 'lucide-react';
+import { Ticket as TicketIcon, Clock, CheckCircle, Users } from 'lucide-react';
 import TicketExportSelector from '@/components/ticket-export-selector';
+
+// Tipos específicos para el dashboard
+interface DashboardMetricas {
+    tickets_abiertos: number;
+    tickets_en_progreso: number;
+    tickets_cerrados: number;
+    total_tickets: number;
+}
+
+interface GraficaData {
+    status: string;
+    cantidad: number;
+    fill: string;
+}
+
+interface UltimoTicket {
+    numero_ticket: string;
+    tecnico_asignado: string;
+    estado: string;
+    created_at: string;
+}
+
+interface DashboardPageProps extends PageProps {
+    metricas: DashboardMetricas;
+    graficaData: GraficaData[];
+    ultimosTickets: UltimoTicket[];
+    userRole: string | null;
+    allTickets: Ticket[];
+}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -43,7 +72,7 @@ const getStatusIcon = (status: string) => {
     switch (status) {
         case 'Open':
         case 'Abiertos':
-            return <Ticket className="h-6 w-6" />;
+            return <TicketIcon className="h-6 w-6" />;
         case 'In Progress':
         case 'En Progreso':
             return <Clock className="h-6 w-6" />;
@@ -56,31 +85,31 @@ const getStatusIcon = (status: string) => {
 };
 
 export default function Dashboard() {
-    const { metricas, graficaData, ultimosTickets, userRole, allTickets } = usePage<PageProps>().props;
+    const { metricas, graficaData, ultimosTickets, userRole, allTickets } = usePage<DashboardPageProps>().props;
 
     // Datos de las métricas como array para mapear
     const metricasCards = [
         {
             titulo: 'Tickets Abiertos',
-            valor: (metricas as any)?.tickets_abiertos || 0,
+            valor: metricas?.tickets_abiertos || 0,
             status: 'Open',
             descripcion: 'Tickets pendientes'
         },
         {
             titulo: 'Tickets en Progreso',
-            valor: (metricas as any)?.tickets_en_progreso || 0,
+            valor: metricas?.tickets_en_progreso || 0,
             status: 'In Progress',
             descripcion: 'En proceso de resolución'
         },
         {
             titulo: 'Tickets Cerrados',
-            valor: (metricas as any)?.tickets_cerrados || 0,
+            valor: metricas?.tickets_cerrados || 0,
             status: 'Closed',
             descripcion: 'Resueltos completamente'
         },
         {
             titulo: 'Total de Tickets',
-            valor: (metricas as any)?.total_tickets || 0,
+            valor: metricas?.total_tickets || 0,
             status: 'Total',
             descripcion: 'Todos los tickets'
         }
@@ -142,7 +171,7 @@ export default function Dashboard() {
                     <CardContent>
                         <ChartContainer config={chartConfig}>
                             <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={graficaData as any}>
+                                <BarChart data={graficaData}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis 
                                         dataKey="status" 
@@ -184,7 +213,7 @@ export default function Dashboard() {
                             
                             {/* Filas de datos */}
                             {ultimosTickets && Array.isArray(ultimosTickets) && ultimosTickets.length > 0 ? (
-                                ultimosTickets.map((ticket: any, index: number) => (
+                                ultimosTickets.map((ticket: UltimoTicket, index: number) => (
                                     <div key={index} className="grid grid-cols-4 gap-4 py-2 text-sm">
                                         <div className="font-medium text-blue-600">
                                             {ticket.numero_ticket}
