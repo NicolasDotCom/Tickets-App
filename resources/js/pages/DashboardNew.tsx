@@ -5,6 +5,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Ticket, Clock, CheckCircle, Users } from 'lucide-react';
+import TicketExportSelector from '@/components/ticket-export-selector';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -55,7 +56,7 @@ const getStatusIcon = (status: string) => {
 };
 
 export default function Dashboard() {
-    const { metricas, graficaData, ultimosTickets, userRole } = usePage<PageProps>().props;
+    const { metricas, graficaData, ultimosTickets, userRole, allTickets } = usePage<PageProps>().props;
 
     // Datos de las métricas como array para mapear
     const metricasCards = [
@@ -88,6 +89,23 @@ export default function Dashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
+            
+            {/* Sección de exportación (solo para admins) */}
+            {userRole === 'admin' && allTickets && Array.isArray(allTickets) && allTickets.length > 0 && (
+                <div className="mb-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Exportar Tickets</CardTitle>
+                            <CardDescription>
+                                Selecciona y exporta tickets específicos a CSV
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <TicketExportSelector tickets={allTickets} />
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
             
             {/* Métricas superiores - 4 casillas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
