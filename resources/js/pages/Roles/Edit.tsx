@@ -12,7 +12,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/roles',
     },
     {
-        title: 'Edit',
+        title: 'Editar',
         href: '#',
     },
 ];
@@ -29,6 +29,49 @@ export default function Edit() {
     const { data, setData, put, processing } = useForm({
         permissions: rolePermissions,
     });
+
+    // Función para traducir nombres de entidades
+    const translateEntity = (entity: string) => {
+        const translations: { [key: string]: string } = {
+            'ticket': 'Ticket',
+            'status': 'Estado',
+            'customer': 'Cliente',
+            'support': 'Soporte'
+        };
+        return translations[entity.toLowerCase()] || entity;
+    };
+
+    // Función para traducir nombres de permisos
+    const translatePermission = (permission: string) => {
+        const translations: { [key: string]: string } = {
+            'view ticket': 'ver ticket',
+            'create ticket': 'crear ticket',
+            'edit ticket': 'editar ticket',
+            'reopen ticket': 'reabrir ticket',
+            'update status ticket': 'actualizar estado ticket',
+            'view customer': 'ver cliente',
+            'create customer': 'crear cliente',
+            'edit customer': 'editar cliente',
+            'delete customer': 'eliminar cliente',
+            'view support': 'ver soporte',
+            'create support': 'crear soporte',
+            'edit support': 'editar soporte',
+            'delete support': 'eliminar soporte'
+        };
+        return translations[permission.toLowerCase()] || permission;
+    };
+
+    // Función para traducir nombres de roles
+    const translateRole = (roleName: string) => {
+        const translations: { [key: string]: string } = {
+            'admin': 'Administrador',
+            'customer': 'Cliente',
+            'support': 'Soporte',
+            'guest': 'Invitado',
+            'Coordinador': 'Coordinador'
+        };
+        return translations[roleName] || roleName;
+    };
 
     const handleCheckboxChange = (permissionName: string, checked: boolean) => {
         if (checked) {
@@ -51,15 +94,15 @@ export default function Edit() {
     };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Edit Role - ${role.name}`} />
+            <Head title={`Editar Rol - ${translateRole(role.name)}`} />
              <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Edit Role: {role.name}</h1>
+                <h1 className="text-2xl font-bold">Editar Rol: {translateRole(role.name)}</h1>
                 <Card>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <CardContent className="flex flex-col gap-4">
                     {Object.entries(permissions).map(([entity, perms]) => (
                         <div key={entity} className="space-y-2">
-                            <h2 className="text-lg font-semibold capitalize">{entity}</h2>
+                            <h2 className="text-lg font-semibold capitalize">{translateEntity(entity)}</h2>
                             <div className="flex flex-wrap gap-4">
                                 {perms.map((permission) => (
                                     <div key={permission.id} className="flex items-center gap-2 w-1/4">
@@ -74,7 +117,7 @@ export default function Edit() {
                                             htmlFor={`perm-${permission.id}`}
                                             className="text-sm"
                                         >
-                                            {permission.name}
+                                            {translatePermission(permission.name)}
                                         </label>
                                     </div>
                                 ))}
@@ -84,16 +127,16 @@ export default function Edit() {
                     </CardContent>
                         <CardFooter className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={handleCancel}>
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button type="submit" disabled={processing}>
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Saving...
+                                        Guardando...
                                     </div>
                                 ) : (
-                                    'Save'
+                                    'Guardar'
                                 )}
                             </Button>
                         </CardFooter>

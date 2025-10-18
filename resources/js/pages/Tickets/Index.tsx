@@ -57,13 +57,13 @@ export default function Index() {
         },
         {
             accessorKey: 'customer.id',
-            header: 'Customer',
-            cell: ({row}) => row.original.customer?.name || 'Unassigned'
+            header: 'Cliente',
+            cell: ({row}) => row.original.customer?.name || 'Sin asignar'
         },
         {
             accessorKey: 'support.id',
-            header: 'Technical Support',
-            cell: ({row}) => row.original.support?.name || 'Unassigned'
+            header: 'Soporte Técnico',
+            cell: ({row}) => row.original.support?.name || 'Sin asignar'
         },
         {
             accessorKey: 'brand',
@@ -75,11 +75,11 @@ export default function Index() {
         },
         {
             accessorKey: 'description',
-            header: 'Description'
+            header: 'Descripción'
         },
         {
             accessorKey: 'status',
-            header: 'State',
+            header: 'Estado',
             cell: ({row}) => {
                 const status = row.original.status;
                 return (
@@ -104,7 +104,7 @@ export default function Index() {
         },
         {
             id: 'actions',
-            header: 'Actions',
+            header: 'Acciones',
             cell: ({ row }) => {
                 const ticket = row.original;
                 return (
@@ -186,7 +186,7 @@ export default function Index() {
                     <h1 className="text-2xl font-bold">Tickets</h1>
                     <Link href={route('tickets.create')}>
                         <Button>
-                            <Plus className='mr-2 h-4 w-4' /> Add Ticket
+                            <Plus className='mr-2 h-4 w-4' /> Crear Ticket
                         </Button>
                     </Link>
                 </div>
@@ -202,7 +202,7 @@ export default function Index() {
                         onPageChange: handlePageChange,
                     }}
                     onSearch={handleSearch}
-                    searchPlaceholder='Search...'
+                    searchPlaceholder='Buscar...'
                 />
             </div>
         </AppLayout>

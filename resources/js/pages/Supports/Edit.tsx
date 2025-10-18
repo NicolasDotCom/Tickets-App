@@ -47,7 +47,7 @@ export default function Edit({support}: {support:Support}) {
             data.phone !== support.phone ||
             data.speciality !== support.speciality
         ) {
-            if(!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) {
+            if(!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
                 return;
             }
         }

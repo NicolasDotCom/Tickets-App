@@ -73,7 +73,7 @@ export default function Edit() {
 
   const handleCancel = () => {
     if (data.name !== user.name || data.email !== user.email || data.role !== user.roles[0]?.name || data.phone !== (support?.phone ?? customer?.phone ?? '') || data.speciality !== (support?.speciality ?? '') || data.name_user !== (customer?.name_user ?? '')) {
-      if (!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) return;
+      if (!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) return;
     }
     router.visit(route('users.index'));
   };
@@ -177,16 +177,16 @@ export default function Edit() {
 
             <CardFooter className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={handleCancel}>
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" disabled={processing}>
                 {processing ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Saving...
+                    Guardando...
                   </div>
                 ) : (
-                  'Save'
+                  'Guardar'
                 )}
               </Button>
             </CardFooter>

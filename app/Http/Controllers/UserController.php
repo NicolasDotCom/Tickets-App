@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Support;
 use App\Models\Customer;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -60,6 +61,9 @@ class UserController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
             ]);
+            
+            // Disparar el evento Registered para enviar el correo de verificación
+            event(new Registered($user));
             
             $user->assignRole($validated['role']);
             

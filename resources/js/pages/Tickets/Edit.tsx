@@ -31,15 +31,15 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/tickets',
     },
     {
-        title: 'Edit',
+        title: 'Editar',
         href: '',
     },
 ];
 
 const statuses = [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Closed', label: 'Closed' },
+    { value: 'Open', label: 'Abierto' },
+    { value: 'In Progress', label: 'En Progreso' },
+    { value: 'Closed', label: 'Cerrado' },
 ];
 
 export default function Edit() {
@@ -64,7 +64,7 @@ export default function Edit() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!data.description) {
-            alert('Description is required.');
+            alert('La descripción es requerida.');
             return;
         }
         
@@ -182,7 +182,7 @@ export default function Edit() {
             data.status !== ticket.status.toLowerCase() ||
             data.documents.length > 0
         ) {
-            if (!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) {
+            if (!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
                 return;
             }
         }
@@ -193,18 +193,18 @@ export default function Edit() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Tickets" />
+            <Head title="Editar Tickets" />
             <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Edit Ticket</h1>
+                <h1 className="text-2xl font-bold">Editar Ticket</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
                         <CardHeader></CardHeader>
                         <CardContent className="flex flex-col gap-4">
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="customer">Customer</Label>
+                                <Label htmlFor="customer">Cliente</Label>
                                 <div className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                                    {ticket.customer?.name || 'No customer assigned'}
+                                    {ticket.customer?.name || 'Sin cliente asignado'}
                                 </div>
                             </div>
 
@@ -220,7 +220,7 @@ export default function Edit() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="support_id">Technical Support</Label>
+                                <Label htmlFor="support_id">Soporte Técnico</Label>
                                 <Popover open={supportOpen} onOpenChange={setSupportOpen}>
                                     <PopoverTrigger asChild>
                                         <Button
@@ -232,15 +232,15 @@ export default function Edit() {
                                         >
                                             {data.support_id
                                                 ? supportsList.find((s) => s.id === Number(data.support_id))?.name
-                                                : 'Select technical support...'}
+                                                : 'Seleccionar soporte técnico...'}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-full p-0">
                                         <Command>
-                                            <CommandInput placeholder="Search technical support..." />
+                                            <CommandInput placeholder="Buscar soporte técnico..." />
                                             <CommandList>
-                                                <CommandEmpty>No technical support found.</CommandEmpty>
+                                                <CommandEmpty>No se encontró soporte técnico.</CommandEmpty>
                                                 <CommandGroup>
                                                     <CommandItem
                                                         value=""
@@ -255,7 +255,7 @@ export default function Edit() {
                                                                 data.support_id === '' ? 'opacity-100' : 'opacity-0'
                                                             )}
                                                         />
-                                                        No assigned
+                                                        Sin asignar
                                                     </CommandItem>
                                                     {supportsList.map((support) => (
                                                         <CommandItem
@@ -332,7 +332,7 @@ export default function Edit() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">Descripción</Label>
                                 <Textarea
                                     id="description"
                                     value={data.description}
@@ -346,7 +346,7 @@ export default function Edit() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="status">Status</Label>
+                                <Label htmlFor="status">Estado</Label>
                                 <Popover open={statusOpen} onOpenChange={setStatusOpen}>
                                     <PopoverTrigger asChild>
                                         <Button
@@ -358,15 +358,15 @@ export default function Edit() {
                                         >
                                             {data.status
                                                 ? statuses.find((s) => s.value === data.status)?.label
-                                                : 'Select status...'}
+                                                : 'Seleccionar estado...'}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-full p-0">
                                         <Command>
-                                            <CommandInput placeholder="Search status..." />
+                                            <CommandInput placeholder="Buscar estado..." />
                                             <CommandList>
-                                                <CommandEmpty>No status found.</CommandEmpty>
+                                                <CommandEmpty>No se encontró estado.</CommandEmpty>
                                                 <CommandGroup>
                                                     {statuses.map((status) => (
                                                         <CommandItem
@@ -400,16 +400,16 @@ export default function Edit() {
 
                         <CardFooter className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={handleCancel}>
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button type="submit" disabled={processing}>
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Saving...
+                                        Guardando...
                                     </div>
                                 ) : (
-                                    'Save'
+                                    'Guardar'
                                 )}
                             </Button>
                         </CardFooter>

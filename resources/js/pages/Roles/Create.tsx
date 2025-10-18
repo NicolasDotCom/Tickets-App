@@ -14,7 +14,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/roles',
     },
     {
-        title: 'Create',
+        title: 'Crear',
         href: '#',
     },
 ];
@@ -26,6 +26,37 @@ export default function Create() {
         name: '',
         permissions: [] as string[],
     });
+
+    // Función para traducir nombres de entidades
+    const translateEntity = (entity: string) => {
+        const translations: { [key: string]: string } = {
+            'ticket': 'Ticket',
+            'status': 'Estado',
+            'customer': 'Cliente',
+            'support': 'Soporte'
+        };
+        return translations[entity.toLowerCase()] || entity;
+    };
+
+    // Función para traducir nombres de permisos
+    const translatePermission = (permission: string) => {
+        const translations: { [key: string]: string } = {
+            'view ticket': 'ver ticket',
+            'create ticket': 'crear ticket',
+            'edit ticket': 'editar ticket',
+            'reopen ticket': 'reabrir ticket',
+            'update status ticket': 'actualizar estado ticket',
+            'view customer': 'ver cliente',
+            'create customer': 'crear cliente',
+            'edit customer': 'editar cliente',
+            'delete customer': 'eliminar cliente',
+            'view support': 'ver soporte',
+            'create support': 'crear soporte',
+            'edit support': 'editar soporte',
+            'delete support': 'eliminar soporte'
+        };
+        return translations[permission.toLowerCase()] || permission;
+    };
 
     const handleCheckboxChange = (permissionName: string, checked: boolean) => {
         if (checked) {
@@ -49,20 +80,20 @@ export default function Create() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Role" />
+            <Head title="Crear Rol" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Create New Role</h1>
+                <h1 className="text-2xl font-bold">Crear Nuevo Rol</h1>
                 <Card>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <CardContent className="flex flex-col gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Role Name</Label>
+                                <Label htmlFor="name">Nombre del Rol</Label>
                                 <Input
                                     id="name"
                                     type="text"
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
-                                    placeholder="Enter role name"
+                                    placeholder="Ingrese el nombre del rol"
                                     className={errors.name ? 'border-red-500' : ''}
                                 />
                                 {errors.name && (
@@ -71,7 +102,7 @@ export default function Create() {
                             </div>
                             {Object.entries(permissions).map(([entity, perms]) => (
                                 <div key={entity} className="space-y-2">
-                                    <h2 className="text-lg font-semibold capitalize">{entity}</h2>
+                                    <h2 className="text-lg font-semibold capitalize">{translateEntity(entity)}</h2>
                                     <div className="flex flex-wrap gap-4">
                                         {perms.map((permission) => (
                                             <div
@@ -94,7 +125,7 @@ export default function Create() {
                                                     htmlFor={`perm-${permission.id}`}
                                                     className="text-sm"
                                                 >
-                                                    {permission.name}
+                                                    {translatePermission(permission.name)}
                                                 </label>
                                             </div>
                                         ))}
@@ -108,16 +139,16 @@ export default function Create() {
                                 variant="outline"
                                 onClick={handleCancel}
                             >
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button type="submit" disabled={processing}>
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Creating...
+                                        Creando...
                                     </div>
                                 ) : (
-                                    'Create Role'
+                                    'Crear Rol'
                                 )}
                             </Button>
                         </CardFooter>

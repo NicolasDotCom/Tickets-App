@@ -26,7 +26,7 @@ export function TablePagination({ from, to, total, links, onPageChange }: TableP
   return (
     <div className="flex items-center justify-between">
          <p className="text-sm text-gray-700">
-            Showing {from} to {to} of {total} items
+            Mostrando {from} a {to} de {total} elementos
         </p>
         <Pagination>
                 <PaginationContent>

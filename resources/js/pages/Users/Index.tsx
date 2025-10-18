@@ -20,7 +20,7 @@ import { useCallback, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Users',
+        title: 'Usuarios',
         href: '/users',
     },
 ];
@@ -49,11 +49,11 @@ export default function Index() {
         },
         {
             accessorKey: 'name',
-            header: 'Name',
+            header: 'Nombre',
         },
         {
             accessorKey: 'email',
-            header: 'Email',
+            header: 'Correo',
         },
         {
             id: 'roles',
@@ -70,7 +70,7 @@ export default function Index() {
         },
         {
             id: 'actions',
-            header: 'Actions',
+            header: 'Acciones',
             cell: ({ row }) => (
                 <div className="flex gap-2">
                     <Link href={route('users.edit', row.original.id)}>
@@ -120,10 +120,10 @@ export default function Index() {
             <Head title="Users" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Users</h1>
+                    <h1 className="text-2xl font-bold">Usuarios</h1>
                     <Link href={route('users.create')}>
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Add User
+                            <Plus className="mr-2 h-4 w-4" /> Agregar Usuario
                         </Button>
                     </Link>
                 </div>
@@ -139,17 +139,17 @@ export default function Index() {
                         onPageChange: handlePageChange,
                     }}
                     onSearch={handleSearch}
-                    searchPlaceholder="Search user..."
+                    searchPlaceholder="Buscar usuario..."
                 />
 
                 <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>This user will be permanently deleted.</AlertDialogDescription>
+                            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                            <AlertDialogDescription>Este usuario será eliminado permanentemente.</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={() => {
                                     if (recordIdToDelete) {
@@ -159,7 +159,7 @@ export default function Index() {
                                     }
                                 }}
                             >
-                                Delete
+                                Eliminar
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

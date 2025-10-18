@@ -10,8 +10,8 @@ import { Loader2 } from 'lucide-react';
 import { FormEvent } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Users', href: '/users' },
-    { title: 'Create', href: '' },
+    { title: 'Usuarios', href: '/users' },
+    { title: 'Crear', href: '' },
 ];
 
 export default function Create() {
@@ -56,22 +56,22 @@ export default function Create() {
 
     const handleCancel = () => {
         if (data.name || data.email || data.phone || data.password || data.role || data.name_user) {
-            if (!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) return;
+            if (!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) return;
         }
         router.visit(route('users.index'));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create User" />
+            <Head title="Crear Usuario" />
             <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Create User</h1>
+                <h1 className="text-2xl font-bold">Crear Usuario</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
-                        <CardHeader>User Information</CardHeader>
+                        <CardHeader>Información del Usuario</CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Nombre</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
@@ -122,7 +122,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Contraseña</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -134,7 +134,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="password_confirmation">Confirm Password</Label>
+                                <Label htmlFor="password_confirmation">Confirmar Contraseña</Label>
                                 <Input
                                     id="password_confirmation"
                                     type="password"
@@ -181,15 +181,15 @@ export default function Create() {
 
                         <CardFooter className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={handleCancel}>
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button type="submit" disabled={processing}>
                                 {processing ? (
                                     <>
-                                        <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                                        <Loader2 className="h-4 w-4 animate-spin" /> Guardando...
                                     </>
                                 ) : (
-                                    'Save'
+                                    'Guardar'
                                 )}
                             </Button>
                         </CardFooter>

@@ -20,7 +20,7 @@ import { useCallback, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Technical Supports',
+        title: 'Soporte Técnico',
         href: '/supports',
     },
 ];
@@ -39,23 +39,23 @@ export default function Index() {
         },
         {
             accessorKey: 'name',
-            header: 'Name',
+            header: 'Nombre',
         },
         {
             accessorKey: 'email',
-            header: 'Email',
+            header: 'Correo',
         },
         {
             accessorKey: 'phone',
-            header: 'Phone',
+            header: 'Teléfono',
         },
         {
             accessorKey: 'speciality',
-            header: 'Speciality',
+            header: 'Especialidad',
         },
         {
             id: 'actions',
-            header: 'Actions',
+            header: 'Acciones',
             cell: ({ row }) => {
                 const support = row.original;
                 return (
@@ -105,13 +105,13 @@ export default function Index() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Technical Supports" />
+            <Head title="Soporte Técnico" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Technical Supports</h1>
+                    <h1 className="text-2xl font-bold">Soporte Técnico</h1>
                     <Link href={route('supports.create')}>
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Add Technical Support
+                            <Plus className="mr-2 h-4 w-4" /> Agregar Soporte Técnico
                         </Button>
                     </Link>
                 </div>
@@ -127,26 +127,26 @@ export default function Index() {
                         onPageChange: handlePageChange,
                     }}
                     onSearch={handleSearch}
-                    searchPlaceholder="Search..."
+                    searchPlaceholder="Buscar..."
                 />
 
                 <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>¿You're sure?</AlertDialogTitle>
+                            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                             <AlertDialogDescription>
                                 {selectedSupport?.tickets_count && selectedSupport.tickets_count > 0 ? (
                                     <span className="font-semibold text-red-600">
-                                        This support has {selectedSupport.tickets_count} ticket{selectedSupport.tickets_count > 1 ? 's' : ''}{' '}
-                                        assigned. You cannot delete them while tickets exist.
+                                        Este soporte tiene {selectedSupport.tickets_count} ticket{selectedSupport.tickets_count > 1 ? 's' : ''}{' '}
+                                        asignado{selectedSupport.tickets_count > 1 ? 's' : ''}. No puedes eliminarlo mientras existan tickets.
                                     </span>
                                 ) : (
-                                    'This action cannot be undone. The record will be permanently deleted.'
+                                    'Esta acción no se puede deshacer. El registro se eliminará permanentemente.'
                                 )}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             {selectedSupport?.tickets_count === 0 && (
                                 <AlertDialogAction
                                     onClick={() => {
@@ -155,7 +155,7 @@ export default function Index() {
                                         }
                                     }}
                                 >
-                                    Delete
+                                    Eliminar
                                 </AlertDialogAction>
                             )}
                         </AlertDialogFooter>

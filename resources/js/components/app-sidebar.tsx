@@ -14,19 +14,19 @@ import { usePermissions } from '@/hooks/use-permissions';
 // Ahora basado en permisos en lugar de roles específicos
 const allMainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Panel de Control',
         href: '/dashboard',
         icon: LayoutGrid,
         roles: ['*'], // Todos los usuarios autenticados pueden ver el dashboard
     },
     {
-        title: 'Customers',
+        title: 'Clientes',
         href: '/customers',
         icon: Users,
         permission: 'view customer', // Basado en permiso en lugar de roles específicos
     },
     {
-        title: 'Technical Supports',
+        title: 'Soporte Técnico',
         href: '/supports',
         icon: BriefcaseMedical,
         permission: 'view support', // Basado en permiso en lugar de roles específicos
@@ -47,13 +47,13 @@ const allFooterNavItems: NavItem[] = [
         roles: ['admin'], // Solo admin puede gestionar roles
     },
     {
-        title: 'Role Assignement',
+        title: 'Asignación de Roles',
         href: '/users/roles',
         icon: BookOpen,
         roles: ['admin'], // Solo admin puede asignar roles
     },
     {
-        title: 'Users',
+        title: 'Usuarios',
         href: '/users',
         icon: BookOpen,
         roles: ['admin'], // Solo admin puede gestionar usuarios

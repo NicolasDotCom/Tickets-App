@@ -10,7 +10,7 @@ import { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'User Roles',
+        title: 'Roles de Usuario',
         href: '/users/roles',
     },
 ];
@@ -19,6 +19,18 @@ export default function UserRolesPage() {
 
     const usersList: UserWithRoles[] = Array.isArray(users) ? users : users.data;
     const roleItems: Role[] = Array.isArray(roles) ? roles : roles.data;
+
+    // Función para traducir nombres de roles
+    const translateRole = (roleName: string) => {
+        const translations: { [key: string]: string } = {
+            'admin': 'Administrador',
+            'customer': 'Cliente',
+            'support': 'Soporte',
+            'guest': 'Invitado',
+            'Coordinador': 'Coordinador'
+        };
+        return translations[roleName] || roleName;
+    };
 
     const initialRoles: Record<number, string> = {};
     usersList.forEach((user) => {
@@ -50,25 +62,25 @@ export default function UserRolesPage() {
 
     const columns = [
         {
-            header: 'Name',
+            header: 'Nombre',
             accessorKey: 'name',
         },
         {
-            header: 'Email',
+            header: 'Correo',
             accessorKey: 'email',
         },
         {
-            header: 'Role',
+            header: 'Rol',
             id: 'role',
             cell: ({ row }: { row: { original: UserWithRoles } }) => (
                 <Select value={data.roles[row.original.id]} onValueChange={(value) => handleChange(row.original.id, value)}>
                     <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder="Seleccionar rol" />
                     </SelectTrigger>
                     <SelectContent>
                         {roleItems.map((role) => (
                             <SelectItem key={role.id} value={role.name}>
-                                {role.name}
+                                {translateRole(role.name)}
                             </SelectItem>
                         ))}
                     </SelectContent>
@@ -102,9 +114,9 @@ export default function UserRolesPage() {
     const paginatedUsers = users as PaginatedData<UserWithRoles>;
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Assign Roles" />
+            <Head title="Asignar Roles" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <h1 className="text-2xl font-bold">Assign Roles to Users</h1>
+                <h1 className="text-2xl font-bold">Asignar Roles a Usuarios</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <Card>
@@ -120,15 +132,15 @@ export default function UserRolesPage() {
                                     onPageChange: handlePageChange,
                                 }}
                                 onSearch={handleSearch}
-                                searchPlaceholder="Search users..."
+                                searchPlaceholder="Buscar usuarios..."
                             />
                         </CardContent>
                         <CardFooter className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={handleCancel}>
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button type="submit" disabled={processing}>
-                                Save
+                                Guardar
                             </Button>
                         </CardFooter>
                     </Card>

@@ -18,15 +18,15 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/tickets',
     },
     {
-        title: 'Create',
+        title: 'Crear',
         href: '',
     },
 ];
 
 const statuses = [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Closed', label: 'Closed' },
+    { value: 'Open', label: 'Abierto' },
+    { value: 'In Progress', label: 'En Progreso' },
+    { value: 'Closed', label: 'Cerrado' },
 ];
 
 export default function Create() {
@@ -152,7 +152,7 @@ export default function Create() {
 
     const handleCancel = () => {
         if (data.customer_id || data.support_id || data.description || data.phone || data.address || data.brand || data.model || data.serial || data.status !== 'open' || data.documents.length > 0) {
-            if (!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) {
+            if (!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
                 return;
             }
         }
@@ -163,9 +163,9 @@ export default function Create() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Tickets" />
+            <Head title="Crear Tickets" />
             <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Create Ticket</h1>
+                <h1 className="text-2xl font-bold">Crear Ticket</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
                         <CardHeader></CardHeader>
@@ -280,7 +280,7 @@ export default function Create() {
 
                             {!isCustomer && (
                                 <div className="flex flex-col gap-1">
-                                    <Label htmlFor="support_id">Technical Support</Label>
+                                    <Label htmlFor="support_id">Soporte Técnico</Label>
                                     <Popover open={supportOpen} onOpenChange={setSupportOpen}>
                                         <PopoverTrigger asChild>
                                             <Button
@@ -292,15 +292,15 @@ export default function Create() {
                                             >
                                                 {data.support_id
                                                     ? Array.isArray(supports) ? supports.find((s: any) => s.id === Number(data.support_id))?.name : null
-                                                    : 'Select technical support...'}
+                                                    : 'Seleccionar soporte técnico...'}
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-full p-0">
                                             <Command>
-                                                <CommandInput placeholder="Search technical support..." />
+                                                <CommandInput placeholder="Buscar soporte técnico..." />
                                                 <CommandList>
-                                                    <CommandEmpty>No technical support found.</CommandEmpty>
+                                                    <CommandEmpty>No se encontró soporte técnico.</CommandEmpty>
                                                     <CommandGroup>
                                                         <CommandItem
                                                             value=""
@@ -315,7 +315,7 @@ export default function Create() {
                                                                     data.support_id === '' ? 'opacity-100' : 'opacity-0'
                                                                 )}
                                                             />
-                                                            No assigned
+                                                            Sin asignar
                                                         </CommandItem>
                                                         {Array.isArray(supports) && supports.map((support: any) => (
                                                             <CommandItem
@@ -393,7 +393,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">Descripción</Label>
                                 <Textarea
                                     id="description"
                                     value={data.description}
@@ -407,7 +407,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="status">Status</Label>
+                                <Label htmlFor="status">Estado</Label>
                                 <Popover open={statusOpen} onOpenChange={setStatusOpen}>
                                     <PopoverTrigger asChild>
                                         <Button
@@ -419,15 +419,15 @@ export default function Create() {
                                         >
                                             {data.status
                                                 ? statuses.find((s) => s.value === data.status)?.label
-                                                : 'Select status...'}
+                                                : 'Seleccionar estado...'}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-full p-0">
                                         <Command>
-                                            <CommandInput placeholder="Search status..." />
+                                            <CommandInput placeholder="Buscar estado..." />
                                             <CommandList>
-                                                <CommandEmpty>No status found.</CommandEmpty>
+                                                <CommandEmpty>No se encontró estado.</CommandEmpty>
                                                 <CommandGroup>
                                                     {statuses.map((status) => (
                                                         <CommandItem
@@ -533,16 +533,16 @@ export default function Create() {
 
                         <CardFooter className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={handleCancel}>
-                                Cancel
+                                Cancelar
                             </Button>
                             <Button type="submit" disabled={processing}>
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Saving...
+                                        Guardando...
                                     </div>
                                 ) : (
-                                    'Save'
+                                    'Guardar'
                                 )}
                             </Button>
                         </CardFooter>

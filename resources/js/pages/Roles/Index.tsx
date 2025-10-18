@@ -20,19 +20,31 @@ export default function Index() {
     //normalizamos los datos de roles
     const normalizedRoles = normalizePaginatedData<Role>(roles);
 
+    // Función para traducir nombres de roles
+    const translateRole = (roleName: string) => {
+        const translations: { [key: string]: string } = {
+            'admin': 'Administrador',
+            'customer': 'Cliente',
+            'support': 'Soporte',
+            'guest': 'Invitado',
+            'Coordinador': 'Coordinador'
+        };
+        return translations[roleName] || roleName;
+    };
+
     const columns: ColumnDef<Role>[] = [
         {
-            header: 'Role',
+            header: 'Rol',
             accessorKey: 'name',
-            cell: (info: any) => info.getValue(),
+            cell: (info: any) => translateRole(info.getValue()),
         },
         {
-            header: 'Permissions',
+            header: 'Permisos',
             accessorKey: 'permissions_count',
             cell: (info: any) => info.getValue(),
         },
         {
-            header: 'Actions',
+            header: 'Acciones',
             id: 'actions',
             cell: ({ row }: any) => (
                 <Link href={route('roles.edit', { role: row.original.id })}>
@@ -74,7 +86,7 @@ export default function Index() {
                     <h1 className="text-2xl font-bold">Roles</h1>
                     <Link href={route('roles.create')}>
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Add Role
+                            <Plus className="mr-2 h-4 w-4" /> Agregar Rol
                         </Button>
                     </Link>
                 </div>
@@ -89,7 +101,7 @@ export default function Index() {
                         onPageChange: handlePageChange,
                     }}
                     onSearch={handleSearch}
-                    searchPlaceholder="Search ..."
+                    searchPlaceholder="Buscar..."
                 />
             </div>
         </AppLayout>

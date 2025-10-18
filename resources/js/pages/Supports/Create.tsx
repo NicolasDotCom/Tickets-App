@@ -16,11 +16,11 @@ import { specialities } from '@/constants/specialities';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Technical Supports',
+        title: 'Soporte Técnico',
         href: '/supports',
     },
     {
-        title: 'Create',
+        title: 'Crear',
         href: '',
     },
 ];
@@ -42,7 +42,7 @@ export default function Create() {
 
     const handleCancel = () => {
         if(data.name || data.email || data.phone || data.speciality){
-            if(!confirm('Are you sure you want to leave? Unsaved changes will be lost.')) {
+            if(!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
                 return;
             }
         }
@@ -52,13 +52,13 @@ export default function Create() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Technical Supports" />
             <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Create Technical Supports</h1>
+                <h1 className="text-2xl font-bold">Crear Soporte Técnico</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
-                        <CardHeader>Technical Supports Information</CardHeader>
+                        <CardHeader>Información del Soporte Técnico</CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Nombre</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
@@ -82,7 +82,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="phone">Phone</Label>
+                                <Label htmlFor="phone">Teléfono</Label>
                                 <Input
                                     id="phone"
                                     value={data.phone}
@@ -93,7 +93,7 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <Label htmlFor="address">Speciality</Label>
+                                <Label htmlFor="address">Especialidad</Label>
                                 <Popover open={open} onOpenChange={setOpen}>
                                     <PopoverTrigger asChild>
                                            <Button
@@ -105,16 +105,16 @@ export default function Create() {
                                            >
                                               {data.speciality
                                                 ? specialities.find((spec)=>spec.value === data.speciality)?.label
-                                                : 'Select speciality...'
+                                                : 'Seleccionar especialidad...'
                                               }
                                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                            </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-full p-0">
                                         <Command>
-                                            <CommandInput placeholder="Search speciality..." />
+                                            <CommandInput placeholder="Buscar especialidad..." />
                                             <CommandList>
-                                                <CommandEmpty>No speciality found.</CommandEmpty>
+                                                <CommandEmpty>No se encontró especialidad.</CommandEmpty>
                                                 <CommandGroup>
                                                     {specialities.map((spec)=> (
                                                         <CommandItem
