@@ -77,11 +77,26 @@ APP_FALLBACK_LOCALE=es
 - Laravel Cloud reiniciará automáticamente la aplicación
 - Espera 30-60 segundos
 
-### 6. Limpiar Cache (Opcional pero recomendado)
+### 6. Forzar Redeploy en Laravel Cloud
+
+**MUY IMPORTANTE:** El paquete `resend/resend-php` debe estar instalado.
+
+Opción A - Redeploy automático (Recomendado):
+1. Laravel Cloud detectará el nuevo commit
+2. Reinstalará dependencias automáticamente
+3. Espera 2-3 minutos
+
+Opción B - Forzar manualmente:
+1. Ve a **Deployments** en Laravel Cloud
+2. Clic en **Deploy Now** o **Redeploy**
+3. Espera a que termine el deployment
+
+### 7. Limpiar Cache (Después del redeploy)
 Si tienes acceso a terminal en Laravel Cloud:
 ```bash
 php artisan config:clear
 php artisan cache:clear
+composer dump-autoload
 ```
 
 ---
