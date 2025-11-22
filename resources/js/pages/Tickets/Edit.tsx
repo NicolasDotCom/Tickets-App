@@ -42,11 +42,22 @@ const statuses = [
     { value: 'Closed', label: 'Cerrado' },
 ];
 
+const subjects = [
+    { value: 'Atascos', label: 'Atascos' },
+    { value: 'Manchas', label: 'Manchas' },
+    { value: 'Configuración', label: 'Configuración' },
+    { value: 'Código de Error', label: 'Código de Error' },
+    { value: 'Solicitud de Toner', label: 'Solicitud de Toner' },
+    { value: 'Servicio de Ingeniería', label: 'Servicio de Ingeniería' },
+    { value: 'Otros', label: 'Otros' },
+];
+
 export default function Edit() {
-    const {ticket, supports } = usePage<PageProps & {ticket: TicketWithDocuments}>().props;
+    const { ticket, supports, auth } = usePage<PageProps & { ticket: TicketWithDocuments }>().props;
 
     const { data, setData, put, processing, errors } = useForm({
         support_id: ticket.support_id ? String(ticket.support_id) : '',
+        subject: ticket.subject || '',
         description: ticket.description || '',
         phone: ticket.phone || 'No especificado',
         address: ticket.address || 'No especificado',
@@ -58,14 +69,25 @@ export default function Edit() {
     });
 
     const [supportOpen, setSupportOpen] = useState(false);
+    const [subjectOpen, setSubjectOpen] = useState(false);
     const [statusOpen, setStatusOpen] = useState(false);
     const [isDragOver, setIsDragOver] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!data.description) {
-            alert('La descripción es requerida.');
+        
+        // Validación base
+        if (!data.subject || !data.description || !data.phone || !data.address) {
+            alert('Asunto, Teléfono, Dirección y Descripción son requeridos.');
             return;
+        }
+        
+        // Si NO es "Solicitud de Toner", validar marca, modelo y serial
+        if (data.subject !== 'Solicitud de Toner') {
+            if (!data.brand || !data.model || !data.serial) {
+                alert('Para este tipo de asunto, Marca, Modelo y Serial son requeridos.');
+                return;
+            }
         }
         
         // Usar post con _method para manejar archivos
@@ -189,6 +211,29 @@ export default function Edit() {
         router.visit(route('tickets.index'));
     };
 
+    const handleRealizarReporte = () => {
+        // Detectar si es dispositivo móvil
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        const appDeepLink = 'appsheet://start/03aa385a-941e-47f2-9610-67f468263dc4?view=Servicios';
+        const webUrl = 'https://www.appsheet.com/start/03aa385a-941e-47f2-9610-67f468263dc4?platform=desktop#appName=InforTes-858189668&vss=H4sIAAAAAAAAA6WOOw7CMBBE7zK1T-AWUSAETRANpjD2RrJI7Ch2ApHlu7PhWwPlzuq9mYzR0aVK2pwhD_lzrWmCRFbYTR0pSIVF8KkPjYJQ2Or2EVbUj864EBUKylG8BIkiZP6Sl3_2CzhLPrnaUT_LZpQlT5DfM8bBG0IRaIekTw3dNzNUCmd1MEMku-cxv4yIK7-8dtrbTbDsrHUTqdwAnSmppGoBAAA=&view=Servicios';
+        
+        if (isMobile) {
+            // Intentar abrir la app instalada primero
+            window.location.href = appDeepLink;
+            
+            // Si la app no se abre en 2 segundos, abrir la versión web como fallback
+            setTimeout(() => {
+                if (!document.hidden) {
+                    window.open(webUrl, '_blank');
+                }
+            }, 2000);
+        } else {
+            // En escritorio, abrir directamente la versión web
+            window.open(webUrl, '_blank');
+        }
+    };
+
     const supportsList = supports as { id: number; name: string }[];
 
     return (
@@ -206,6 +251,57 @@ export default function Edit() {
                                 <div className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                                     {ticket.customer?.name || 'Sin cliente asignado'}
                                 </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                                <Label htmlFor="subject">Asunto</Label>
+                                <Popover open={subjectOpen} onOpenChange={setSubjectOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            role="combobox"
+                                            aria-expanded={subjectOpen}
+                                            className="w-full justify-between"
+                                            disabled={processing}
+                                        >
+                                            {data.subject
+                                                ? subjects.find((s) => s.value === data.subject)?.label
+                                                : 'Seleccionar asunto...'}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-full p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Buscar asunto..." />
+                                            <CommandList>
+                                                <CommandEmpty>No se encontró asunto.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {subjects.map((subject) => (
+                                                        <CommandItem
+                                                            key={subject.value}
+                                                            value={subject.value}
+                                                            onSelect={(currentValue) => {
+                                                                setData('subject', currentValue);
+                                                                setSubjectOpen(false);
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    'mr-2 h-4 w-4',
+                                                                    data.subject === subject.value
+                                                                        ? 'opacity-100'
+                                                                        : 'opacity-0'
+                                                                )}
+                                                            />
+                                                            {subject.label}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                                {errors.subject && <p className="text-sm text-red-500">{errors.subject}</p>}
                             </div>
 
                             <div className="flex flex-col gap-1">
@@ -298,38 +394,42 @@ export default function Edit() {
                                 {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="brand">Marca</Label>
-                                <Input
-                                    id="brand"
-                                    value={data.brand}
-                                    onChange={(e) => setData('brand', e.target.value)}
-                                    disabled={processing}
-                                />
-                                {errors.brand && <p className="text-sm text-red-500">{errors.brand}</p>}
-                            </div>
+                            {data.subject !== 'Solicitud de Toner' && (
+                                <>
+                                    <div className="flex flex-col gap-1">
+                                        <Label htmlFor="brand">Marca</Label>
+                                        <Input
+                                            id="brand"
+                                            value={data.brand}
+                                            onChange={(e) => setData('brand', e.target.value)}
+                                            disabled={processing}
+                                        />
+                                        {errors.brand && <p className="text-sm text-red-500">{errors.brand}</p>}
+                                    </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="model">Modelo</Label>
-                                <Input
-                                    id="model"
-                                    value={data.model}
-                                    onChange={(e) => setData('model', e.target.value)}
-                                    disabled={processing}
-                                />
-                                {errors.model && <p className="text-sm text-red-500">{errors.model}</p>}
-                            </div>
+                                    <div className="flex flex-col gap-1">
+                                        <Label htmlFor="model">Modelo</Label>
+                                        <Input
+                                            id="model"
+                                            value={data.model}
+                                            onChange={(e) => setData('model', e.target.value)}
+                                            disabled={processing}
+                                        />
+                                        {errors.model && <p className="text-sm text-red-500">{errors.model}</p>}
+                                    </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="serial">Serial</Label>
-                                <Input
-                                    id="serial"
-                                    value={data.serial}
-                                    onChange={(e) => setData('serial', e.target.value)}
-                                    disabled={processing}
-                                />
-                                {errors.serial && <p className="text-sm text-red-500">{errors.serial}</p>}
-                            </div>
+                                    <div className="flex flex-col gap-1">
+                                        <Label htmlFor="serial">Serial</Label>
+                                        <Input
+                                            id="serial"
+                                            value={data.serial}
+                                            onChange={(e) => setData('serial', e.target.value)}
+                                            disabled={processing}
+                                        />
+                                        {errors.serial && <p className="text-sm text-red-500">{errors.serial}</p>}
+                                    </div>
+                                </>
+                            )}
 
                             <div className="flex flex-col gap-1">
                                 <Label htmlFor="description">Descripción</Label>
@@ -398,20 +498,34 @@ export default function Edit() {
 
                         </CardContent>
 
-                        <CardFooter className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={handleCancel}>
-                                Cancelar
-                            </Button>
-                            <Button type="submit" disabled={processing}>
-                                {processing ? (
-                                    <div className="flex items-center gap-2">
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        Guardando...
-                                    </div>
-                                ) : (
-                                    'Guardar'
+                        <CardFooter className="flex justify-between gap-2">
+                            <div>
+                                {auth?.roles?.includes('support') && (
+                                    <Button 
+                                        type="button" 
+                                        variant="default"
+                                        onClick={handleRealizarReporte}
+                                        className="bg-blue-600 hover:bg-blue-700"
+                                    >
+                                        Realizar Reporte
+                                    </Button>
                                 )}
-                            </Button>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={handleCancel}>
+                                    Cancelar
+                                </Button>
+                                <Button type="submit" disabled={processing}>
+                                    {processing ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Guardando...
+                                        </div>
+                                    ) : (
+                                        'Guardar'
+                                    )}
+                                </Button>
+                            </div>
                         </CardFooter>
                     </form>
                 </Card>

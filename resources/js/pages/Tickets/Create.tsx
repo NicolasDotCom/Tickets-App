@@ -29,6 +29,16 @@ const statuses = [
     { value: 'Closed', label: 'Cerrado' },
 ];
 
+const subjects = [
+    { value: 'Atascos', label: 'Atascos' },
+    { value: 'Manchas', label: 'Manchas' },
+    { value: 'Configuración', label: 'Configuración' },
+    { value: 'Código de Error', label: 'Código de Error' },
+    { value: 'Solicitud de Toner', label: 'Solicitud de Toner' },
+    { value: 'Servicio de Ingeniería', label: 'Servicio de Ingeniería' },
+    { value: 'Otros', label: 'Otros' },
+];
+
 export default function Create() {
     const { customers, supports, companies, isCustomer, preselectedCustomer } = usePage<PageProps>().props;
 
@@ -36,6 +46,7 @@ export default function Create() {
         company_name: '', // Cambiar a company_name para el nombre de la empresa
         customer_id: '',
         support_id: '',
+        subject: '',
         description: '',
         phone: '',
         address: '',
@@ -49,6 +60,7 @@ export default function Create() {
     const [companyOpen, setCompanyOpen] = useState(false);
     const [customerOpen, setCustomerOpen] = useState(false);
     const [supportOpen, setSupportOpen] = useState(false);
+    const [subjectOpen, setSubjectOpen] = useState(false);
     const [statusOpen, setStatusOpen] = useState(false);
     const [isDragOver, setIsDragOver] = useState(false);
 
@@ -77,9 +89,19 @@ export default function Create() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!data.company_name || !data.customer_id || !data.description || !data.phone || !data.address || !data.brand || !data.model || !data.serial) {
-            alert('Empresa, Usuario y todos los campos son requeridos.');
+        
+        // Validación base
+        if (!data.company_name || !data.customer_id || !data.subject || !data.description || !data.phone || !data.address) {
+            alert('Empresa, Usuario, Asunto, Teléfono, Dirección y Descripción son requeridos.');
             return;
+        }
+        
+        // Si NO es "Solicitud de Toner", validar marca, modelo y serial
+        if (data.subject !== 'Solicitud de Toner') {
+            if (!data.brand || !data.model || !data.serial) {
+                alert('Para este tipo de asunto, Marca, Modelo y Serial son requeridos.');
+                return;
+            }
         }
         
         post(route('tickets.store'), {
@@ -268,6 +290,57 @@ export default function Create() {
                             </div>
 
                             <div className="flex flex-col gap-1">
+                                <Label htmlFor="subject">Asunto</Label>
+                                <Popover open={subjectOpen} onOpenChange={setSubjectOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            role="combobox"
+                                            aria-expanded={subjectOpen}
+                                            className="w-full justify-between"
+                                            disabled={processing}
+                                        >
+                                            {data.subject
+                                                ? subjects.find((s) => s.value === data.subject)?.label
+                                                : 'Seleccionar asunto...'}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-full p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Buscar asunto..." />
+                                            <CommandList>
+                                                <CommandEmpty>No se encontró asunto.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {subjects.map((subject) => (
+                                                        <CommandItem
+                                                            key={subject.value}
+                                                            value={subject.value}
+                                                            onSelect={(currentValue) => {
+                                                                setData('subject', currentValue);
+                                                                setSubjectOpen(false);
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    'mr-2 h-4 w-4',
+                                                                    data.subject === subject.value
+                                                                        ? 'opacity-100'
+                                                                        : 'opacity-0'
+                                                                )}
+                                                            />
+                                                            {subject.label}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                                {errors.subject && <p className="text-sm text-red-500">{errors.subject}</p>}
+                            </div>
+
+                            <div className="flex flex-col gap-1">
                                 <Label htmlFor="phone">Teléfono</Label>
                                 <Input
                                     id="phone"
@@ -359,38 +432,42 @@ export default function Create() {
                                 {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="brand">Marca</Label>
-                                <Input
-                                    id="brand"
-                                    value={data.brand}
-                                    onChange={(e) => setData('brand', e.target.value)}
-                                    disabled={processing}
-                                />
-                                {errors.brand && <p className="text-sm text-red-500">{errors.brand}</p>}
-                            </div>
+                            {data.subject !== 'Solicitud de Toner' && (
+                                <>
+                                    <div className="flex flex-col gap-1">
+                                        <Label htmlFor="brand">Marca</Label>
+                                        <Input
+                                            id="brand"
+                                            value={data.brand}
+                                            onChange={(e) => setData('brand', e.target.value)}
+                                            disabled={processing}
+                                        />
+                                        {errors.brand && <p className="text-sm text-red-500">{errors.brand}</p>}
+                                    </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="model">Modelo</Label>
-                                <Input
-                                    id="model"
-                                    value={data.model}
-                                    onChange={(e) => setData('model', e.target.value)}
-                                    disabled={processing}
-                                />
-                                {errors.model && <p className="text-sm text-red-500">{errors.model}</p>}
-                            </div>
+                                    <div className="flex flex-col gap-1">
+                                        <Label htmlFor="model">Modelo</Label>
+                                        <Input
+                                            id="model"
+                                            value={data.model}
+                                            onChange={(e) => setData('model', e.target.value)}
+                                            disabled={processing}
+                                        />
+                                        {errors.model && <p className="text-sm text-red-500">{errors.model}</p>}
+                                    </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="serial">Serial</Label>
-                                <Input
-                                    id="serial"
-                                    value={data.serial}
-                                    onChange={(e) => setData('serial', e.target.value)}
-                                    disabled={processing}
-                                />
-                                {errors.serial && <p className="text-sm text-red-500">{errors.serial}</p>}
-                            </div>
+                                    <div className="flex flex-col gap-1">
+                                        <Label htmlFor="serial">Serial</Label>
+                                        <Input
+                                            id="serial"
+                                            value={data.serial}
+                                            onChange={(e) => setData('serial', e.target.value)}
+                                            disabled={processing}
+                                        />
+                                        {errors.serial && <p className="text-sm text-red-500">{errors.serial}</p>}
+                                    </div>
+                                </>
+                            )}
 
                             <div className="flex flex-col gap-1">
                                 <Label htmlFor="description">Descripción</Label>

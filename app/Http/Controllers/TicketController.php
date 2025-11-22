@@ -147,18 +147,31 @@ class TicketController extends Controller
         }
 
         try {
-            $validated = $request->validate([
+            // Validación base
+            $rules = [
                 'customer_id' => 'required|exists:customers,id',
                 'support_id' => 'nullable|exists:supports,id',
+                'subject' => 'required|in:Atascos,Manchas,Configuración,Código de Error,Solicitud de Toner,Servicio de Ingeniería,Otros',
                 'description' => 'required|string',
                 'phone' => 'required|string|max:20',
                 'address' => 'required|string|max:255',
-                'brand' => 'required|string|max:100',
-                'model' => 'required|string|max:100',
-                'serial' => 'required|string|max:100',
                 'status' => 'required|in:Open,In Progress,Closed',
                 'documents.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,txt,jpg,jpeg,png,xlsx,xls'
-            ]);
+            ];
+
+            // Si el asunto es "Solicitud de Toner", marca, modelo y serial son opcionales
+            if ($request->subject === 'Solicitud de Toner') {
+                $rules['brand'] = 'nullable|string|max:100';
+                $rules['model'] = 'nullable|string|max:100';
+                $rules['serial'] = 'nullable|string|max:100';
+            } else {
+                // Para otros asuntos, todos los campos son obligatorios
+                $rules['brand'] = 'required|string|max:100';
+                $rules['model'] = 'required|string|max:100';
+                $rules['serial'] = 'required|string|max:100';
+            }
+
+            $validated = $request->validate($rules);
 
             // Crear el ticket con timestamp correcto
             $validated['created_at'] = DateHelper::nowColombia();
@@ -278,25 +291,36 @@ class TicketController extends Controller
         }
 
         try {
-            $validated = $request->validate([
-                //'customer_id' => 'required|exists:customers,id',
+            // Validación base
+            $rules = [
                 'support_id' => 'nullable|exists:supports,id',
+                'subject' => 'required|in:Atascos,Manchas,Configuración,Código de Error,Solicitud de Toner,Servicio de Ingeniería,Otros',
                 'description' => 'required|string|min:1',
-                'phone' => 'nullable|string|max:20',
-                'address' => 'nullable|string|max:255',
-                'brand' => 'nullable|string|max:100',
-                'model' => 'nullable|string|max:100',
-                'serial' => 'nullable|string|max:100',
+                'phone' => 'required|string|max:20',
+                'address' => 'required|string|max:255',
                 'status' => 'required|in:Open,In Progress,Closed',
                 'documents.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,txt,jpg,jpeg,png,xlsx,xls'
-            ]);
+            ];
 
-            // Asignar valores por defecto si están vacíos
-            $validated['phone'] = $validated['phone'] ?: 'No especificado';
-            $validated['address'] = $validated['address'] ?: 'No especificado';
-            $validated['brand'] = $validated['brand'] ?: 'No especificado';
-            $validated['model'] = $validated['model'] ?: 'No especificado';
-            $validated['serial'] = $validated['serial'] ?: 'No especificado';
+            // Si el asunto es "Solicitud de Toner", marca, modelo y serial son opcionales
+            if ($request->subject === 'Solicitud de Toner') {
+                $rules['brand'] = 'nullable|string|max:100';
+                $rules['model'] = 'nullable|string|max:100';
+                $rules['serial'] = 'nullable|string|max:100';
+            } else {
+                $rules['brand'] = 'required|string|max:100';
+                $rules['model'] = 'required|string|max:100';
+                $rules['serial'] = 'required|string|max:100';
+            }
+
+            $validated = $request->validate($rules);
+
+            // Asignar valores por defecto para Solicitud de Toner si están vacíos
+            if ($request->subject === 'Solicitud de Toner') {
+                $validated['brand'] = $validated['brand'] ?? 'No especificado';
+                $validated['model'] = $validated['model'] ?? 'No especificado';
+                $validated['serial'] = $validated['serial'] ?? 'No especificado';
+            }
 
             $ticket->update($validated);
 
