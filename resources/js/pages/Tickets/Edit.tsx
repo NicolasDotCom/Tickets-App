@@ -53,7 +53,7 @@ const subjects = [
 ];
 
 export default function Edit() {
-    const { ticket, supports, auth } = usePage<PageProps & { ticket: TicketWithDocuments }>().props;
+    const { ticket, supports } = usePage<PageProps & { ticket: TicketWithDocuments }>().props;
 
     const { data, setData, put, processing, errors } = useForm({
         support_id: ticket.support_id ? String(ticket.support_id) : '',
@@ -209,29 +209,6 @@ export default function Edit() {
             }
         }
         router.visit(route('tickets.index'));
-    };
-
-    const handleRealizarReporte = () => {
-        // Detectar si es dispositivo móvil
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        const appDeepLink = 'appsheet://start/03aa385a-941e-47f2-9610-67f468263dc4?view=Servicios';
-        const webUrl = 'https://www.appsheet.com/start/03aa385a-941e-47f2-9610-67f468263dc4?platform=desktop#appName=InforTes-858189668&vss=H4sIAAAAAAAAA6WOOw7CMBBE7zK1T-AWUSAETRANpjD2RrJI7Ch2ApHlu7PhWwPlzuq9mYzR0aVK2pwhD_lzrWmCRFbYTR0pSIVF8KkPjYJQ2Or2EVbUj864EBUKylG8BIkiZP6Sl3_2CzhLPrnaUT_LZpQlT5DfM8bBG0IRaIekTw3dNzNUCmd1MEMku-cxv4yIK7-8dtrbTbDsrHUTqdwAnSmppGoBAAA=&view=Servicios';
-        
-        if (isMobile) {
-            // Intentar abrir la app instalada primero
-            window.location.href = appDeepLink;
-            
-            // Si la app no se abre en 2 segundos, abrir la versión web como fallback
-            setTimeout(() => {
-                if (!document.hidden) {
-                    window.open(webUrl, '_blank');
-                }
-            }, 2000);
-        } else {
-            // En escritorio, abrir directamente la versión web
-            window.open(webUrl, '_blank');
-        }
     };
 
     const supportsList = supports as { id: number; name: string }[];
@@ -498,34 +475,20 @@ export default function Edit() {
 
                         </CardContent>
 
-                        <CardFooter className="flex justify-between gap-2">
-                            <div>
-                                {auth?.roles?.includes('support') && (
-                                    <Button 
-                                        type="button" 
-                                        variant="default"
-                                        onClick={handleRealizarReporte}
-                                        className="bg-blue-600 hover:bg-blue-700"
-                                    >
-                                        Realizar Reporte
-                                    </Button>
+                        <CardFooter className="flex justify-end gap-2">
+                            <Button type="button" variant="outline" onClick={handleCancel}>
+                                Cancelar
+                            </Button>
+                            <Button type="submit" disabled={processing}>
+                                {processing ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Guardando...
+                                    </div>
+                                ) : (
+                                    'Guardar'
                                 )}
-                            </div>
-                            <div className="flex gap-2">
-                                <Button type="button" variant="outline" onClick={handleCancel}>
-                                    Cancelar
-                                </Button>
-                                <Button type="submit" disabled={processing}>
-                                    {processing ? (
-                                        <div className="flex items-center gap-2">
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            Guardando...
-                                        </div>
-                                    ) : (
-                                        'Guardar'
-                                    )}
-                                </Button>
-                            </div>
+                            </Button>
                         </CardFooter>
                     </form>
                 </Card>

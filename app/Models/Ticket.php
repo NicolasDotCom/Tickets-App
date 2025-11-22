@@ -11,6 +11,7 @@ class Ticket extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'customer_id',
         'support_id',
         'subject',
@@ -55,5 +56,17 @@ class Ticket extends Model
     public function documents()
     {
         return $this->hasMany(TicketDocument::class);
+    }
+
+    //Relación con TicketComment
+    public function comments()
+    {
+        return $this->hasMany(TicketComment::class);
+    }
+
+    //Relación con User (creador del ticket)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -6,6 +6,8 @@ use App\Models\Customer;
 use App\Models\Support;
 use App\Models\Ticket;
 use App\Models\TicketDocument;
+use App\Models\TicketComment;
+use App\Models\TicketCommentAttachment;
 use App\Models\User;
 use App\Helpers\DateHelper;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ class TicketController extends Controller
         $this->middleware('permission:view ticket')->only(['index', 'show']);
         $this->middleware('permission:create ticket')->only(['create', 'store']);
         $this->middleware('permission:edit ticket')->only(['edit', 'update', 'deleteDocument']);
-        $this->middleware('permission:view ticket')->only(['downloadDocument']);
+        $this->middleware('permission:view ticket')->only(['downloadDocument', 'updateStatus']);
     }
     /**
      * Display a listing of the resource.
@@ -174,6 +176,7 @@ class TicketController extends Controller
             $validated = $request->validate($rules);
 
             // Crear el ticket con timestamp correcto
+            $validated['user_id'] = $userId;
             $validated['created_at'] = DateHelper::nowColombia();
             $validated['updated_at'] = DateHelper::nowColombia();
             $ticket = Ticket::create($validated);
@@ -227,7 +230,7 @@ class TicketController extends Controller
             }
         }
 
-        $ticket->load(['customer', 'support', 'documents']);
+        $ticket->load(['customer', 'support', 'user', 'documents', 'comments.user', 'comments.attachments']);
         
         return Inertia::render('Tickets/Show', [
             'ticket' => $ticket
@@ -353,6 +356,56 @@ class TicketController extends Controller
     }
 
     /**
+     * Update only the status of the ticket (for support users)
+     */
+    public function updateStatus(Request $request, Ticket $ticket)
+    {
+        $userId = Auth::id();
+        $user = User::find($userId);
+
+        // Si el usuario es técnico de soporte, verificar que el ticket esté asignado a él
+        if ($user && $user->hasRole('support')) {
+            $support = Support::where('email', $user->email)->first();
+            if (!$support || $ticket->support_id !== $support->id) {
+                return redirect()->back()->with('error', 'No tienes autorización para actualizar este ticket.');
+            }
+        }
+        // Si el usuario es cliente, no puede cambiar el estado
+        elseif ($user && $user->hasRole('customer')) {
+            return redirect()->back()->with('error', 'No tienes autorización para cambiar el estado.');
+        }
+
+        try {
+            $validated = $request->validate([
+                'status' => 'required|in:Open,In Progress,Closed',
+            ]);
+
+            $updateData = [
+                'status' => $validated['status'],
+                'updated_at' => DateHelper::nowColombia(),
+            ];
+
+            // Si el estado es "Closed", establecer la fecha de cierre
+            if ($validated['status'] === 'Closed') {
+                $updateData['closed_at'] = DateHelper::nowColombia();
+            } else {
+                // Si se reabre el ticket, limpiar la fecha de cierre
+                $updateData['closed_at'] = null;
+            }
+
+            $ticket->update($updateData);
+
+            return redirect()
+                ->back()
+                ->with('success', 'Estado del ticket actualizado exitosamente!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'No se pudo actualizar el estado: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     /* public function destroy(Ticket $ticket)
@@ -437,5 +490,100 @@ class TicketController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al eliminar el documento: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Store a new comment for a ticket
+     */
+    public function storeComment(Request $request, Ticket $ticket)
+    {
+        $userId = Auth::id();
+        $user = User::find($userId);
+
+        // Verificar permisos de acceso al ticket
+        if ($user && $user->hasRole('support')) {
+            $support = Support::where('email', $user->email)->first();
+            if (!$support || $ticket->support_id !== $support->id) {
+                return redirect()->back()->with('error', 'No tienes autorización para comentar en este ticket.');
+            }
+        } elseif ($user && $user->hasRole('customer')) {
+            $customer = Customer::where('email', $user->email)->first();
+            if (!$customer || $ticket->customer_id !== $customer->id) {
+                return redirect()->back()->with('error', 'No tienes autorización para comentar en este ticket.');
+            }
+        }
+
+        try {
+            $validated = $request->validate([
+                'comment' => 'nullable|string|max:5000',
+                'attachments.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,txt,jpg,jpeg,png,xlsx,xls'
+            ]);
+
+            // Validar que al menos haya comentario o archivos
+            if (empty($validated['comment']) && !$request->hasFile('attachments')) {
+                return redirect()->back()->with('error', 'Debes agregar un comentario o adjuntar al menos un archivo.');
+            }
+
+            // Crear el comentario
+            $comment = TicketComment::create([
+                'ticket_id' => $ticket->id,
+                'user_id' => $userId,
+                'comment' => $validated['comment'] ?? '',
+                'created_at' => DateHelper::nowColombia(),
+                'updated_at' => DateHelper::nowColombia(),
+            ]);
+
+            // Procesar archivos adjuntos si existen
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $originalName = $file->getClientOriginalName();
+                    $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $filePath = $file->storeAs('comment-attachments', $fileName, 'public');
+
+                    TicketCommentAttachment::create([
+                        'ticket_comment_id' => $comment->id,
+                        'file_name' => $originalName,
+                        'file_path' => $filePath,
+                        'mime_type' => $file->getMimeType(),
+                        'file_size' => $file->getSize(),
+                    ]);
+                }
+            }
+
+            return redirect()->back()->with('success', 'Comentario agregado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error al agregar el comentario: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Download comment attachment
+     */
+    public function downloadCommentAttachment(TicketCommentAttachment $attachment)
+    {
+        $userId = Auth::id();
+        $user = User::find($userId);
+        $ticket = $attachment->comment->ticket;
+
+        // Verificar permisos de acceso al ticket
+        if ($user && $user->hasRole('support')) {
+            $support = Support::where('email', $user->email)->first();
+            if (!$support || $ticket->support_id !== $support->id) {
+                abort(403, 'No tienes autorización para descargar este archivo.');
+            }
+        } elseif ($user && $user->hasRole('customer')) {
+            $customer = Customer::where('email', $user->email)->first();
+            if (!$customer || $ticket->customer_id !== $customer->id) {
+                abort(403, 'No tienes autorización para descargar este archivo.');
+            }
+        }
+
+        $filePath = storage_path('app/public/' . $attachment->file_path);
+        
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'El archivo no existe.');
+        }
+
+        return response()->download($filePath, $attachment->file_name);
     }
 }

@@ -12,14 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tickets', function (Blueprint $table) {
-            $table->enum('subject', [
-                'Atascos',
-                'Manchas',
-                'Configuración',
-                'Solicitud de Toner',
-                'Servicio de Ingeniería',
-                'Otros'
-            ])->after('support_id')->nullable();
+            $table->foreignId('user_id')->nullable()->after('id')->constrained('users')->onDelete('set null');
         });
     }
 
@@ -29,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tickets', function (Blueprint $table) {
-            $table->dropColumn('subject');
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
         });
     }
 };

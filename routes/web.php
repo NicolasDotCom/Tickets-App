@@ -25,6 +25,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('ticket-documents.download');
     Route::delete('/ticket-documents/{document}', [TicketController::class, 'deleteDocument'])
         ->name('ticket-documents.destroy');
+    
+    // Ruta para actualizar solo el estado del ticket (soporte técnico)
+    Route::patch('/tickets/{ticket}/status', [TicketController::class, 'updateStatus'])
+        ->name('tickets.update-status');
+    
+    // Rutas para comentarios en tickets
+    Route::post('/tickets/{ticket}/comments', [TicketController::class, 'storeComment'])
+        ->name('tickets.comments.store');
+    Route::get('/comment-attachments/{attachment}/download', [TicketController::class, 'downloadCommentAttachment'])
+        ->name('comment-attachments.download');
 });
 
 // Rutas accesibles para usuarios autenticados con permisos específicos

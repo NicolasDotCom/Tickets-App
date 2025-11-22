@@ -50,6 +50,19 @@ export default function Index() {
         }
     }
 
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case 'Open':
+                return 'Abierto';
+            case 'In Progress':
+                return 'En Progreso';
+            case 'Closed':
+                return 'Cerrado';
+            default:
+                return status;
+        }
+    }
+
     const columns: ColumnDef<Ticket>[] = [
         {
             accessorKey: 'id',
@@ -84,7 +97,7 @@ export default function Index() {
                 const status = row.original.status;
                 return (
                     <Badge variant={getStatus(status)} className='capitalize'>
-                        {status}
+                        {getStatusLabel(status)}
                     </Badge>
                 )
             }
@@ -114,11 +127,13 @@ export default function Index() {
                                 <Eye className='h-4 w-4'/>
                             </Button>
                         </Link>
-                        <Link href={route('tickets.edit', ticket.id)}>
-                            <Button size="sm" variant="default">
-                                <Pencil className='h-4 w-4'/>
-                            </Button>
-                        </Link>
+                        {!auth?.roles?.includes('support') && (
+                            <Link href={route('tickets.edit', ticket.id)}>
+                                <Button size="sm" variant="default">
+                                    <Pencil className='h-4 w-4'/>
+                                </Button>
+                            </Link>
+                        )}
                         {/* Boton eliminar deshabilitado por temas de auditoría */}
                         {/* <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                             <AlertDialogTrigger asChild>

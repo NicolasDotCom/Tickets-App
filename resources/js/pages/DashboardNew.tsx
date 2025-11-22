@@ -38,7 +38,7 @@ interface DashboardPageProps extends PageProps {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Menú',
         href: '/dashboard',
     },
 ];
@@ -84,6 +84,20 @@ const getStatusIcon = (status: string) => {
     }
 };
 
+// Función para traducir estados al español
+const getStatusLabel = (status: string) => {
+    switch (status) {
+        case 'Open':
+            return 'Abierto';
+        case 'In Progress':
+            return 'En Progreso';
+        case 'Closed':
+            return 'Cerrado';
+        default:
+            return status;
+    }
+};
+
 export default function Dashboard() {
     const { metricas, graficaData, ultimosTickets, userRole, allTickets } = usePage<DashboardPageProps>().props;
 
@@ -117,7 +131,7 @@ export default function Dashboard() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title="Menú" />
             
             {/* Sección de exportación (solo para admins) */}
             {userRole === 'admin' && allTickets && Array.isArray(allTickets) && allTickets.length > 0 && (
@@ -208,7 +222,7 @@ export default function Dashboard() {
                                 <div>N° Ticket</div>
                                 <div>Técnico</div>
                                 <div>Estado</div>
-                                <div>Fecha</div>
+                                <div>Creado</div>
                             </div>
                             
                             {/* Filas de datos */}
@@ -223,7 +237,7 @@ export default function Dashboard() {
                                         </div>
                                         <div>
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.estado)}`}>
-                                                {ticket.estado}
+                                                {getStatusLabel(ticket.estado)}
                                             </span>
                                         </div>
                                         <div className="text-gray-500">
