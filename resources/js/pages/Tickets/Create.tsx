@@ -40,7 +40,7 @@ const subjects = [
 ];
 
 export default function Create() {
-    const { customers, supports, companies, isCustomer, preselectedCustomer } = usePage<PageProps>().props;
+    const { customers, supports, companies, isCustomer, preselectedCustomer, auth } = usePage<PageProps>().props;
 
     const { data, setData, post, processing, errors } = useForm({
         company_name: '', // Cambiar a company_name para el nombre de la empresa
@@ -49,6 +49,7 @@ export default function Create() {
         subject: '',
         description: '',
         phone: '',
+        nombre_contacto: '',
         address: '',
         brand: '',
         model: '',
@@ -91,8 +92,8 @@ export default function Create() {
         e.preventDefault();
         
         // Validación base
-        if (!data.company_name || !data.customer_id || !data.subject || !data.description || !data.phone || !data.address) {
-            alert('Empresa, Usuario, Asunto, Teléfono, Dirección y Descripción son requeridos.');
+        if (!data.company_name || !data.customer_id || !data.subject || !data.description || !data.phone || !data.nombre_contacto || !data.address) {
+            alert('Empresa, Usuario, Asunto, Teléfono, Nombre de Contacto, Dirección y Descripción son requeridos.');
             return;
         }
         
@@ -173,7 +174,7 @@ export default function Create() {
     };
 
     const handleCancel = () => {
-        if (data.customer_id || data.support_id || data.description || data.phone || data.address || data.brand || data.model || data.serial || data.status !== 'open' || data.documents.length > 0) {
+        if (data.customer_id || data.support_id || data.description || data.phone || data.nombre_contacto || data.address || data.brand || data.model || data.serial || data.status !== 'open' || data.documents.length > 0) {
             if (!confirm('¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.')) {
                 return;
             }
@@ -351,6 +352,18 @@ export default function Create() {
                                 {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
                             </div>
 
+                            <div className="flex flex-col gap-1">
+                                <Label htmlFor="nombre_contacto">Nombre de Contacto</Label>
+                                <Input
+                                    id="nombre_contacto"
+                                    value={data.nombre_contacto}
+                                    onChange={(e) => setData('nombre_contacto', e.target.value)}
+                                    disabled={processing}
+                                    placeholder="Nombre de la persona de contacto"
+                                />
+                                {errors.nombre_contacto && <p className="text-sm text-red-500">{errors.nombre_contacto}</p>}
+                            </div>
+
                             {!isCustomer && (
                                 <div className="flex flex-col gap-1">
                                     <Label htmlFor="support_id">Soporte Técnico</Label>
@@ -483,56 +496,58 @@ export default function Create() {
                                 )}
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="status">Estado</Label>
-                                <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            role="combobox"
-                                            aria-expanded={statusOpen}
-                                            className="w-full justify-between"
-                                            disabled={processing}
-                                        >
-                                            {data.status
-                                                ? statuses.find((s) => s.value === data.status)?.label
-                                                : 'Seleccionar estado...'}
-                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-full p-0">
-                                        <Command>
-                                            <CommandInput placeholder="Buscar estado..." />
-                                            <CommandList>
-                                                <CommandEmpty>No se encontró estado.</CommandEmpty>
-                                                <CommandGroup>
-                                                    {statuses.map((status) => (
-                                                        <CommandItem
-                                                            key={status.value}
-                                                            value={status.value}
-                                                            onSelect={(currentValue) => {
-                                                                setData('status', currentValue);
-                                                                setStatusOpen(false);
-                                                            }}
-                                                        >
-                                                            <Check
-                                                                className={cn(
-                                                                    'mr-2 h-4 w-4',
-                                                                    data.status === status.value
-                                                                        ? 'opacity-100'
-                                                                        : 'opacity-0'
-                                                                )}
-                                                            />
-                                                            {status.label}
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </PopoverContent>
-                                </Popover>
-                                {errors.status && <p className="text-sm text-red-500">{errors.status}</p>}
-                            </div>
+                            {!auth?.roles?.includes('customer') && (
+                                <div className="flex flex-col gap-1">
+                                    <Label htmlFor="status">Estado</Label>
+                                    <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={statusOpen}
+                                                className="w-full justify-between"
+                                                disabled={processing}
+                                            >
+                                                {data.status
+                                                    ? statuses.find((s) => s.value === data.status)?.label
+                                                    : 'Seleccionar estado...'}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-full p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Buscar estado..." />
+                                                <CommandList>
+                                                    <CommandEmpty>No se encontró estado.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {statuses.map((status) => (
+                                                            <CommandItem
+                                                                key={status.value}
+                                                                value={status.value}
+                                                                onSelect={(currentValue) => {
+                                                                    setData('status', currentValue);
+                                                                    setStatusOpen(false);
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        'mr-2 h-4 w-4',
+                                                                        data.status === status.value
+                                                                            ? 'opacity-100'
+                                                                            : 'opacity-0'
+                                                                    )}
+                                                                />
+                                                                {status.label}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                    {errors.status && <p className="text-sm text-red-500">{errors.status}</p>}
+                                </div>
+                            )}
 
                             <div className="flex flex-col gap-1">
                                 <Label htmlFor="documents">Documentos (Opcional)</Label>

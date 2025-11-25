@@ -53,7 +53,7 @@ const subjects = [
 ];
 
 export default function Edit() {
-    const { ticket, supports } = usePage<PageProps & { ticket: TicketWithDocuments }>().props;
+    const { ticket, supports, auth } = usePage<PageProps & { ticket: TicketWithDocuments }>().props;
 
     const { data, setData, put, processing, errors } = useForm({
         support_id: ticket.support_id ? String(ticket.support_id) : '',
@@ -422,56 +422,58 @@ export default function Edit() {
                                 )}
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <Label htmlFor="status">Estado</Label>
-                                <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            role="combobox"
-                                            aria-expanded={statusOpen}
-                                            className="w-full justify-between"
-                                            disabled={processing}
-                                        >
-                                            {data.status
-                                                ? statuses.find((s) => s.value === data.status)?.label
-                                                : 'Seleccionar estado...'}
-                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-full p-0">
-                                        <Command>
-                                            <CommandInput placeholder="Buscar estado..." />
-                                            <CommandList>
-                                                <CommandEmpty>No se encontró estado.</CommandEmpty>
-                                                <CommandGroup>
-                                                    {statuses.map((status) => (
-                                                        <CommandItem
-                                                            key={status.value}
-                                                            value={status.value}
-                                                            onSelect={(currentValue) => {
-                                                                setData('status', currentValue as 'Open' | 'In Progress' | 'Closed');
-                                                                setStatusOpen(false);
-                                                            }}
-                                                        >
-                                                            <Check
-                                                                className={cn(
-                                                                    'mr-2 h-4 w-4',
-                                                                    data.status === status.value
-                                                                        ? 'opacity-100'
-                                                                        : 'opacity-0'
-                                                                )}
-                                                            />
-                                                            {status.label}
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </PopoverContent>
-                                </Popover>
-                                {errors.status && <p className="text-sm text-red-500">{errors.status}</p>}
-                            </div>
+                            {!auth?.roles?.includes('customer') && (
+                                <div className="flex flex-col gap-1">
+                                    <Label htmlFor="status">Estado</Label>
+                                    <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={statusOpen}
+                                                className="w-full justify-between"
+                                                disabled={processing}
+                                            >
+                                                {data.status
+                                                    ? statuses.find((s) => s.value === data.status)?.label
+                                                    : 'Seleccionar estado...'}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-full p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Buscar estado..." />
+                                                <CommandList>
+                                                    <CommandEmpty>No se encontró estado.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {statuses.map((status) => (
+                                                            <CommandItem
+                                                                key={status.value}
+                                                                value={status.value}
+                                                                onSelect={(currentValue) => {
+                                                                    setData('status', currentValue as 'Open' | 'In Progress' | 'Closed');
+                                                                    setStatusOpen(false);
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        'mr-2 h-4 w-4',
+                                                                        data.status === status.value
+                                                                            ? 'opacity-100'
+                                                                            : 'opacity-0'
+                                                                    )}
+                                                                />
+                                                                {status.label}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                    {errors.status && <p className="text-sm text-red-500">{errors.status}</p>}
+                                </div>
+                            )}
 
                         </CardContent>
 

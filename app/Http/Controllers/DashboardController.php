@@ -112,14 +112,19 @@ class DashboardController extends Controller
                 return [
                     'id' => $ticket->id,
                     'description' => $ticket->description,
+                    'phone' => $ticket->phone,
+                    'address' => $ticket->address,
                     'status' => $ticket->status, // Mantener estado original para filtros
                     'customer' => $ticket->customer ? [
-                        'name' => $ticket->customer->name
+                        'name' => $ticket->customer->name,
+                        'email' => $ticket->customer->email,
+                        'username' => $ticket->customer->username,
                     ] : null,
                     'support' => $ticket->support ? [
-                        'name' => $ticket->support->name
+                        'name' => $ticket->support->name,
+                        'email' => $ticket->support->email,
                     ] : null,
-                    'created_at' => $ticket->created_at ? $ticket->created_at->setTimezone(config('app.timezone'))->format('d/m/Y H:i') : '',
+                    'created_at' => $ticket->created_at ? $ticket->created_at->setTimezone(config('app.timezone'))->format('Y-m-d H:i:s') : '',
                     'brand' => $ticket->brand,
                     'model' => $ticket->model,
                     'serial' => $ticket->serial,

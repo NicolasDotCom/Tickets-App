@@ -156,6 +156,7 @@ class TicketController extends Controller
                 'subject' => 'required|in:Atascos,Manchas,Configuración,Código de Error,Solicitud de Toner,Servicio de Ingeniería,Otros',
                 'description' => 'required|string',
                 'phone' => 'required|string|max:20',
+                'nombre_contacto' => 'required|string|max:255',
                 'address' => 'required|string|max:255',
                 'status' => 'required|in:Open,In Progress,Closed',
                 'documents.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,txt,jpg,jpeg,png,xlsx,xls'

@@ -17,6 +17,7 @@ class Ticket extends Model
         'subject',
         'description',
         'phone',
+        'nombre_contacto',
         'address',
         'brand',
         'model',

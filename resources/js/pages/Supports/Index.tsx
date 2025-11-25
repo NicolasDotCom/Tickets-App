@@ -53,32 +53,6 @@ export default function Index() {
             accessorKey: 'speciality',
             header: 'Especialidad',
         },
-        {
-            id: 'actions',
-            header: 'Acciones',
-            cell: ({ row }) => {
-                const support = row.original;
-                return (
-                    <div className="flex gap-2">
-                        <Link href={route('supports.edit', support.id)}>
-                            <Button size="sm" variant="default">
-                                <Pencil className="h-4 w-4" />
-                            </Button>
-                        </Link>
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => {
-                                setSelectedSupport(support);
-                                setIsDialogOpen(true);
-                            }}
-                        >
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                );
-            },
-        },
     ];
 
     const handleSearch = useCallback((searchTerm: string) => {
@@ -109,11 +83,6 @@ export default function Index() {
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Soporte Técnico</h1>
-                    <Link href={route('supports.create')}>
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Agregar Soporte Técnico
-                        </Button>
-                    </Link>
                 </div>
 
                 <DataTable

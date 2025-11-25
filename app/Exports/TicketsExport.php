@@ -40,7 +40,6 @@ class TicketsExport
             'Número de Ticket',
             'Asunto',
             'Cliente',
-            'Empresa',
             'Técnico Asignado',
             'Estado',
             'Fecha de Creación',
@@ -57,7 +56,6 @@ class TicketsExport
                 '#' . str_pad($ticket->id, 4, '0', STR_PAD_LEFT),
                 $ticket->subject ?? 'Sin asunto',
                 $ticket->customer ? $ticket->customer->name : 'Sin asignar',
-                $ticket->customer ? $ticket->customer->name_user : 'Sin empresa',
                 $ticket->support ? $ticket->support->name : 'Sin asignar',
                 match($ticket->status) {
                     'Open' => 'Abierto',

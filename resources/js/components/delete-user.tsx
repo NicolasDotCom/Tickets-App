@@ -20,10 +20,10 @@ export default function DeleteUser() {
     if (!isAdmin()) {
         return (
             <div className="space-y-6">
-                <HeadingSmall title="Delete account" description="Delete your account and all of its resources" />
+                <HeadingSmall title="Eliminar cuenta" description="Elimina tu cuenta y todos sus recursos" />
                 <div className="space-y-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-200/10 dark:bg-yellow-700/10">
                     <div className="relative space-y-0.5 text-yellow-700 dark:text-yellow-100">
-                        <p className="font-medium">Restricted Action</p>
+                        <p className="font-medium">Acción Restringida</p>
                         <p className="text-sm">
                             Solo los administradores pueden eliminar cuentas de usuario. 
                             Si necesitas eliminar tu cuenta, contacta a un administrador del sistema.
@@ -52,27 +52,27 @@ export default function DeleteUser() {
 
     return (
         <div className="space-y-6">
-            <HeadingSmall title="Delete account" description="Delete your account and all of its resources" />
+            <HeadingSmall title="Eliminar cuenta" description="Elimina tu cuenta y todos sus recursos" />
             <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-                    <p className="font-medium">Warning</p>
-                    <p className="text-sm">Please proceed with caution, this cannot be undone.</p>
+                    <p className="font-medium">Advertencia</p>
+                    <p className="text-sm">Por favor procede con precaución, esta acción no se puede deshacer.</p>
                 </div>
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="destructive">Delete account</Button>
+                        <Button variant="destructive">Eliminar cuenta</Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <DialogTitle>Are you sure you want to delete your account?</DialogTitle>
+                        <DialogTitle>¿Estás seguro de que quieres eliminar tu cuenta?</DialogTitle>
                         <DialogDescription>
-                            Once your account is deleted, all of its resources and data will also be permanently deleted. Please enter your password
-                            to confirm you would like to permanently delete your account.
+                            Una vez que tu cuenta sea eliminada, todos sus recursos y datos también serán eliminados permanentemente. Por favor ingresa tu contraseña
+                            para confirmar que deseas eliminar permanentemente tu cuenta.
                         </DialogDescription>
                         <form className="space-y-6" onSubmit={deleteUser}>
                             <div className="grid gap-2">
                                 <Label htmlFor="password" className="sr-only">
-                                    Password
+                                    Contraseña
                                 </Label>
 
                                 <Input
@@ -82,7 +82,7 @@ export default function DeleteUser() {
                                     ref={passwordInput}
                                     value={data.password}
                                     onChange={(e) => setData('password', e.target.value)}
-                                    placeholder="Password"
+                                    placeholder="Contraseña"
                                     autoComplete="current-password"
                                 />
 
@@ -92,12 +92,12 @@ export default function DeleteUser() {
                             <DialogFooter className="gap-2">
                                 <DialogClose asChild>
                                     <Button variant="secondary" onClick={closeModal}>
-                                        Cancel
+                                        Cancelar
                                     </Button>
                                 </DialogClose>
 
                                 <Button variant="destructive" disabled={processing} asChild>
-                                    <button type="submit">Delete account</button>
+                                    <button type="submit">Eliminar cuenta</button>
                                 </Button>
                             </DialogFooter>
                         </form>

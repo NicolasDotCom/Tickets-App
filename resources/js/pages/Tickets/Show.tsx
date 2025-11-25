@@ -17,6 +17,7 @@ interface Ticket {
     subject: string;
     description: string;
     phone: string;
+    nombre_contacto: string;
     address: string;
     brand: string;
     model: string;
@@ -259,7 +260,7 @@ export default function Show() {
                                 Realizar Reporte
                             </Button>
                         )}
-                        {!auth?.roles?.includes('support') && (
+                        {auth?.roles?.includes('admin') && (
                             <Link href={route('tickets.edit', ticket.id)}>
                                 <Button variant="outline">
                                     <Edit className="h-4 w-4 mr-2" />
@@ -286,11 +287,6 @@ export default function Show() {
                                 <label className="text-sm font-medium text-gray-500">Cliente</label>
                                 <p className="text-lg">{ticket.customer.name}</p>
                                 <p className="text-sm text-gray-600">{ticket.customer.email}</p>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-gray-500">Creado por</label>
-                                <p className="text-lg">{ticket.user.name}</p>
                             </div>
                             
                             <div>
@@ -349,6 +345,11 @@ export default function Show() {
                                     </Popover>
                                 </div>
                             )}
+
+                            <div>
+                                <label className="text-sm font-medium text-gray-500">Nombre de contacto</label>
+                                <p className="text-lg">{ticket.nombre_contacto}</p>
+                            </div>
 
                             <div>
                                 <label className="text-sm font-medium text-gray-500">Teléfono</label>

@@ -127,7 +127,7 @@ export default function Index() {
                                 <Eye className='h-4 w-4'/>
                             </Button>
                         </Link>
-                        {!auth?.roles?.includes('support') && (
+                        {auth?.roles?.includes('admin') && (
                             <Link href={route('tickets.edit', ticket.id)}>
                                 <Button size="sm" variant="default">
                                     <Pencil className='h-4 w-4'/>

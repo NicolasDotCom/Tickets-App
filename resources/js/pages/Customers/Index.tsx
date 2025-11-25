@@ -60,33 +60,6 @@ export default function Index() {
             accessorKey: 'tickets_count',
             header: 'Tickets',
         },
-        {
-            id: 'actions',
-            header: 'Acciones',
-            cell: ({ row }) => {
-                const customer = row.original;
-                return (
-                    <div className='flex gap-2'>
-                        <Link href={route('customers.edit', customer.id)}>
-                            <Button size="sm" variant="default">
-                                <Pencil className='h-4 w-4'/>
-                            </Button>
-                        </Link>
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => {
-                                setSelectedCustomer(customer);
-                                setRecordIdToDelete(customer.id);
-                                setIsDialogOpen(true);
-                            }}
-                        >
-                            <Trash2 className='h-4 w-4'/>
-                        </Button>
-                    </div>
-                );
-            },
-        },
     ];
 
     const handleSearch = useCallback((searchTerm: string) => {
@@ -113,11 +86,6 @@ export default function Index() {
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Usuarios</h1>
-                    <Link href={route('customers.create')}>
-                        <Button>
-                            <Plus className='mr-2 h-4 w-4' /> Agregar Usuario
-                        </Button>
-                    </Link>
                 </div>
 
                 <DataTable

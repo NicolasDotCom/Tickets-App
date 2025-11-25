@@ -25,15 +25,47 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
     useEffect(() => {
         let filtered = tickets;
 
-        // Filtro por término de búsqueda
+        // Filtro por término de búsqueda - busca en TODOS los campos relevantes
         if (searchTerm) {
-            filtered = filtered.filter(ticket => 
-                ticket.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                ticket.customer?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                ticket.support?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                ticket.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                ticket.model?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            const search = searchTerm.toLowerCase();
+            filtered = filtered.filter(ticket => {
+                // Búsqueda por ID (con y sin formato)
+                const ticketId = ticket.id.toString();
+                const formattedId = `#${ticketId.padStart(4, '0')}`;
+                if (ticketId.includes(search) || formattedId.toLowerCase().includes(search)) {
+                    return true;
+                }
+
+                // Búsqueda en campos de texto del ticket
+                if (ticket.description?.toLowerCase().includes(search) ||
+                    ticket.phone?.toLowerCase().includes(search) ||
+                    ticket.address?.toLowerCase().includes(search) ||
+                    ticket.brand?.toLowerCase().includes(search) ||
+                    ticket.model?.toLowerCase().includes(search) ||
+                    ticket.serial?.toLowerCase().includes(search)) {
+                    return true;
+                }
+
+                // Búsqueda en relaciones (customer y support)
+                if (ticket.customer?.name?.toLowerCase().includes(search) ||
+                    ticket.customer?.email?.toLowerCase().includes(search) ||
+                    ticket.customer?.username?.toLowerCase().includes(search)) {
+                    return true;
+                }
+
+                if (ticket.support?.name?.toLowerCase().includes(search) ||
+                    ticket.support?.email?.toLowerCase().includes(search)) {
+                    return true;
+                }
+
+                // Búsqueda por estado (traducido)
+                const statusText = getStatusLabel(ticket.status).toLowerCase();
+                if (statusText.includes(search)) {
+                    return true;
+                }
+
+                return false;
+            });
         }
 
         // Filtro por estado
@@ -41,18 +73,28 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
             filtered = filtered.filter(ticket => ticket.status === statusFilter);
         }
 
-        // Filtro por rango de fechas
-        if (startDate) {
+        // Filtro por rango de fechas - compara correctamente las fechas
+        if (startDate || endDate) {
             filtered = filtered.filter(ticket => {
-                const ticketDate = new Date(ticket.created_at).toISOString().split('T')[0];
-                return ticketDate >= startDate;
-            });
-        }
+                // Obtener solo la parte de fecha (YYYY-MM-DD) del created_at
+                // Si viene como "2025-11-24 10:30:00" o "2025-11-24T10:30:00.000000Z"
+                let ticketDateString = '';
+                if (ticket.created_at) {
+                    // Extraer solo la parte de fecha (primeros 10 caracteres YYYY-MM-DD)
+                    ticketDateString = ticket.created_at.substring(0, 10);
+                }
 
-        if (endDate) {
-            filtered = filtered.filter(ticket => {
-                const ticketDate = new Date(ticket.created_at).toISOString().split('T')[0];
-                return ticketDate <= endDate;
+                // Verificar fecha desde
+                if (startDate && ticketDateString < startDate) {
+                    return false;
+                }
+
+                // Verificar fecha hasta
+                if (endDate && ticketDateString > endDate) {
+                    return false;
+                }
+
+                return true;
             });
         }
 
@@ -139,7 +181,7 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                         Seleccionar Tickets
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl h-[85vh] flex flex-col">
+                <DialogContent className="max-w-6xl h-[85vh] flex flex-col">
                     <DialogHeader className="pb-3 shrink-0">
                         <DialogTitle>Seleccionar Tickets para Exportar</DialogTitle>
                         <DialogDescription>
@@ -148,8 +190,8 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                     </DialogHeader>
 
                     {/* Filtros */}
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 py-3 border-b shrink-0">
-                        <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 py-3 border-b shrink-0">
+                        <div className="lg:col-span-1">
                             <Label htmlFor="search" className="text-xs font-medium">Buscar</Label>
                             <div className="relative mt-1">
                                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -162,7 +204,7 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                                 />
                             </div>
                         </div>
-                        <div>
+                        <div className="lg:col-span-1">
                             <Label htmlFor="status" className="text-xs font-medium">Estado</Label>
                             <select
                                 id="status"
@@ -176,17 +218,17 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                                 <option value="Closed">Cerrado</option>
                             </select>
                         </div>
-                        <div>
+                        <div className="lg:col-span-1">
                             <Label htmlFor="start-date" className="text-xs font-medium">Fecha Desde</Label>
                             <Input
                                 id="start-date"
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="h-9 mt-1"
+                                className="h-9 mt-1 w-full"
                             />
                         </div>
-                        <div>
+                        <div className="lg:col-span-1">
                             <Label htmlFor="end-date" className="text-xs font-medium">Fecha Hasta</Label>
                             <div className="flex gap-1 mt-1">
                                 <Input
@@ -194,7 +236,7 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className="h-9 flex-1"
+                                    className="h-9 flex-1 w-full"
                                 />
                                 {(startDate || endDate) && (
                                     <Button
@@ -202,7 +244,7 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                                         variant="outline"
                                         size="sm"
                                         onClick={clearDateFilters}
-                                        className="h-9 px-2"
+                                        className="h-9 px-3 shrink-0"
                                         title="Limpiar filtros de fecha"
                                     >
                                         ×
@@ -253,7 +295,7 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                                                         </Badge>
                                                     </div>
                                                     <span className="text-xs text-muted-foreground">
-                                                        {new Date(ticket.created_at).toLocaleDateString('es-CO')}
+                                                        {ticket.created_at ? ticket.created_at.substring(0, 10).split('-').reverse().join('/') : 'Sin fecha'}
                                                     </span>
                                                 </div>
                                                 <p className="text-xs text-muted-foreground mb-1 line-clamp-1">
