@@ -12,41 +12,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Primero obtener todos los valores distintos actuales
-        $subjects = DB::table('tickets')->select('subject')->distinct()->pluck('subject');
+        // Paso 1: Convertir la columna ENUM a VARCHAR temporalmente
+        DB::statement("ALTER TABLE tickets MODIFY COLUMN subject VARCHAR(255) NOT NULL");
         
-        // Crear un mapeo de valores antiguos a nuevos
-        $mapping = [
-            'Configuración' => 'Configuración ó Escaner',
-        ];
+        // Paso 2: Actualizar valores específicos que necesiten ser cambiados
+        DB::table('tickets')
+            ->where('subject', 'Configuración')
+            ->update(['subject' => 'Configuración ó Escaner']);
         
-        // Actualizar registros usando el mapeo
-        foreach ($mapping as $old => $new) {
-            DB::table('tickets')
-                ->where('subject', $old)
-                ->update(['subject' => $new]);
-        }
-        
-        // Modificar la columna con el nuevo ENUM incluyendo tanto valores antiguos como nuevos
-        DB::statement("ALTER TABLE tickets MODIFY COLUMN subject ENUM(
+        // Paso 3: Mapear cualquier valor no reconocido a 'Otros'
+        $validSubjects = [
             'Mantenimiento Preventivo',
             'Manchas',
             'Atascos',
-            'Configuración',
             'Configuración ó Escaner',
             'Código de Error',
             'Remoto',
             'Servicio de Ingeniería',
             'Solicitud de Toner',
             'Otros'
-        ) NOT NULL");
+        ];
         
-        // Actualizar todos los tickets con 'Configuración' a 'Configuración ó Escaner'
         DB::table('tickets')
-            ->where('subject', 'Configuración')
-            ->update(['subject' => 'Configuración ó Escaner']);
-            
-        // Finalmente, modificar la columna al ENUM final sin el valor antiguo
+            ->whereNotIn('subject', $validSubjects)
+            ->update(['subject' => 'Otros']);
+        
+        // Paso 4: Convertir la columna de vuelta a ENUM con los nuevos valores
         DB::statement("ALTER TABLE tickets MODIFY COLUMN subject ENUM(
             'Mantenimiento Preventivo',
             'Manchas',
@@ -65,6 +56,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Convertir a VARCHAR temporalmente
+        DB::statement("ALTER TABLE tickets MODIFY COLUMN subject VARCHAR(255) NOT NULL");
+        
         // Revertir los valores al formato anterior
         DB::table('tickets')
             ->where('subject', 'Configuración ó Escaner')
@@ -72,12 +66,14 @@ return new class extends Migration
 
         // Volver al enum anterior
         DB::statement("ALTER TABLE tickets MODIFY COLUMN subject ENUM(
-            'Atascos',
+            'Mantenimiento Preventivo',
             'Manchas',
+            'Atascos',
             'Configuración',
             'Código de Error',
-            'Solicitud de Toner',
+            'Remoto',
             'Servicio de Ingeniería',
+            'Solicitud de Toner',
             'Otros'
         ) NOT NULL");
     }
