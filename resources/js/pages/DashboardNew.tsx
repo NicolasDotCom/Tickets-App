@@ -135,15 +135,15 @@ export default function Dashboard() {
             
             {/* Sección de exportación (solo para admins) */}
             {userRole === 'admin' && allTickets && Array.isArray(allTickets) && allTickets.length > 0 && (
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6 px-2 sm:px-0">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Exportar Tickets</CardTitle>
-                            <CardDescription>
+                        <CardHeader className="p-4 sm:p-6">
+                            <CardTitle className="text-lg sm:text-xl">Exportar Tickets</CardTitle>
+                            <CardDescription className="text-sm">
                                 Selecciona y exporta tickets específicos a CSV
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-4 sm:p-6 pt-0">
                             <TicketExportSelector tickets={allTickets} />
                         </CardContent>
                     </Card>
@@ -151,19 +151,21 @@ export default function Dashboard() {
             )}
             
             {/* Métricas superiores - 4 casillas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8 px-2 sm:px-0">
                 {metricasCards.map((metrica, index) => (
                     <Card key={index} className="hover:shadow-lg transition-shadow">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
+                            <CardTitle className="text-xs sm:text-sm font-medium text-gray-600">
                                 {metrica.titulo}
                             </CardTitle>
-                            <div className={`p-2 rounded-lg ${getStatusColor(metrica.status)}`}>
-                                {getStatusIcon(metrica.status)}
+                            <div className={`p-1.5 sm:p-2 rounded-lg ${getStatusColor(metrica.status)}`}>
+                                <div className="scale-90 sm:scale-100">
+                                    {getStatusIcon(metrica.status)}
+                                </div>
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold">{metrica.valor}</div>
+                        <CardContent className="p-4 sm:p-6 pt-0">
+                            <div className="text-2xl sm:text-3xl font-bold">{metrica.valor}</div>
                             <p className="text-xs text-gray-500 mt-1">
                                 {metrica.descripcion}
                             </p>
@@ -173,26 +175,29 @@ export default function Dashboard() {
             </div>
 
             {/* Sección inferior con gráfica y tabla */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 px-2 sm:px-0">
                 {/* Gráfica de barras - Izquierda */}
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Resumen de Tickets</CardTitle>
-                        <CardDescription>
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardTitle className="text-base sm:text-xl">Resumen de Tickets</CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">
                             Distribución de tickets por estado
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="px-2 sm:px-6 pb-4 sm:pb-6">
                         <ChartContainer config={chartConfig}>
                             <ResponsiveContainer width="100%" height={300}>
                                 <BarChart data={graficaData}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis 
                                         dataKey="status" 
-                                        tick={{ fontSize: 12 }}
+                                        tick={{ fontSize: 10 }}
                                         interval={0}
+                                        angle={-45}
+                                        textAnchor="end"
+                                        height={60}
                                     />
-                                    <YAxis tick={{ fontSize: 12 }} />
+                                    <YAxis tick={{ fontSize: 10 }} />
                                     <ChartTooltip 
                                         content={<ChartTooltipContent />}
                                     />
@@ -209,16 +214,16 @@ export default function Dashboard() {
 
                 {/* Tabla de últimos tickets - Derecha */}
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Últimos Tickets</CardTitle>
-                        <CardDescription>
+                    <CardHeader className="p-4 sm:p-6">
+                        <CardTitle className="text-base sm:text-xl">Últimos Tickets</CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">
                             Resumen de los tickets más recientes
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
+                    <CardContent className="px-2 sm:px-6 pb-4 sm:pb-6">
+                        <div className="space-y-3 sm:space-y-4 overflow-x-auto">
                             {/* Encabezados */}
-                            <div className="grid grid-cols-4 gap-4 pb-2 border-b text-sm font-medium text-gray-600">
+                            <div className="hidden sm:grid grid-cols-4 gap-4 pb-2 border-b text-sm font-medium text-gray-600">
                                 <div>N° Ticket</div>
                                 <div>Técnico</div>
                                 <div>Estado</div>
@@ -228,7 +233,7 @@ export default function Dashboard() {
                             {/* Filas de datos */}
                             {ultimosTickets && Array.isArray(ultimosTickets) && ultimosTickets.length > 0 ? (
                                 ultimosTickets.map((ticket: UltimoTicket, index: number) => (
-                                    <div key={index} className="grid grid-cols-4 gap-4 py-2 text-sm">
+                                    <div key={index} className="hidden sm:grid grid-cols-4 gap-4 py-2 text-sm">
                                         <div className="font-medium text-blue-600">
                                             {ticket.numero_ticket}
                                         </div>
@@ -241,6 +246,28 @@ export default function Dashboard() {
                                             </span>
                                         </div>
                                         <div className="text-gray-500">
+                                            {ticket.created_at}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : null}
+                            
+                            {/* Vista móvil - Cards */}
+                            {ultimosTickets && Array.isArray(ultimosTickets) && ultimosTickets.length > 0 ? (
+                                ultimosTickets.map((ticket: UltimoTicket, index: number) => (
+                                    <div key={index} className="sm:hidden flex flex-col gap-2 p-3 border rounded-lg bg-gray-50">
+                                        <div className="flex justify-between items-start">
+                                            <div className="font-medium text-blue-600">
+                                                {ticket.numero_ticket}
+                                            </div>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.estado)}`}>
+                                                {getStatusLabel(ticket.estado)}
+                                            </span>
+                                        </div>
+                                        <div className="text-sm text-gray-700">
+                                            <span className="font-medium">Técnico:</span> {ticket.tecnico_asignado}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
                                             {ticket.created_at}
                                         </div>
                                     </div>

@@ -30,22 +30,39 @@ const statuses = [
 ];
 
 const subjects = [
-    { value: 'Atascos', label: 'Atascos' },
+    { value: 'Mantenimiento Preventivo', label: 'Mantenimiento Preventivo' },
     { value: 'Manchas', label: 'Manchas' },
-    { value: 'Configuración', label: 'Configuración' },
+    { value: 'Atascos', label: 'Atascos' },
+    { value: 'Configuración ó Escaner', label: 'Configuración ó Escaner' },
     { value: 'Código de Error', label: 'Código de Error' },
-    { value: 'Solicitud de Toner', label: 'Solicitud de Toner' },
+    { value: 'Remoto', label: 'Remoto' },
     { value: 'Servicio de Ingeniería', label: 'Servicio de Ingeniería' },
+    { value: 'Solicitud de Toner', label: 'Solicitud de Toner' },
     { value: 'Otros', label: 'Otros' },
 ];
 
 export default function Create() {
     const { customers, supports, companies, isCustomer, preselectedCustomer, auth } = usePage<PageProps>().props;
+    
+    // Verificar si el usuario tiene rol comercial (case insensitive)
+    const isComercial = auth?.user?.roles?.some((role: any) => role.name.toLowerCase() === 'comercial');
+    
+    // Verificar si el usuario tiene rol de soporte técnico
+    const isSupport = auth?.user?.roles?.some((role: any) => role.name.toLowerCase() === 'support');
+
+    // Obtener el ID del soporte técnico si el usuario tiene rol support
+    const getUserSupportId = () => {
+        if (isSupport && auth?.user?.email && Array.isArray(supports)) {
+            const userSupport = supports.find((support: any) => support.email === auth.user.email);
+            return userSupport ? String(userSupport.id) : '';
+        }
+        return '';
+    };
 
     const { data, setData, post, processing, errors } = useForm({
         company_name: '', // Cambiar a company_name para el nombre de la empresa
         customer_id: '',
-        support_id: '',
+        support_id: getUserSupportId(),
         subject: '',
         description: '',
         phone: '',
@@ -187,13 +204,14 @@ export default function Create() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Crear Tickets" />
-            <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Crear Ticket</h1>
+            <div className="flex flex-col gap-3 sm:gap-4 p-2 sm:p-4">
+                <h1 className="text-xl sm:text-2xl font-bold">Crear Ticket</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
-                        <CardHeader></CardHeader>
-                        <CardContent className="flex flex-col gap-4">
+                        <CardHeader className="p-4 sm:p-6"></CardHeader>
+                        <CardContent className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-6">
 
+                            {!isComercial && (
                             <div className="flex flex-col gap-1">
                                 <Label htmlFor="name_user">Empresa</Label>
                                 <Popover open={companyOpen} onOpenChange={setCompanyOpen}>
@@ -240,7 +258,9 @@ export default function Create() {
                                 </Popover>
                                 {errors.company_name && <div className="text-red-500 text-sm">{errors.company_name}</div>}
                             </div>
+                            )}
 
+                            {!isComercial && (
                             <div className="flex flex-col gap-1">
                                 <Label htmlFor="customer_id">Usuario</Label>
                                 <Popover open={customerOpen} onOpenChange={setCustomerOpen}>
@@ -289,6 +309,7 @@ export default function Create() {
                                 </Popover>
                                 {errors.customer_id && <p className="text-sm text-red-500">{errors.customer_id}</p>}
                             </div>
+                            )}
 
                             <div className="flex flex-col gap-1">
                                 <Label htmlFor="subject">Asunto</Label>
@@ -364,7 +385,7 @@ export default function Create() {
                                 {errors.nombre_contacto && <p className="text-sm text-red-500">{errors.nombre_contacto}</p>}
                             </div>
 
-                            {!isCustomer && (
+                            {!isCustomer && !isComercial && (
                                 <div className="flex flex-col gap-1">
                                     <Label htmlFor="support_id">Soporte Técnico</Label>
                                     <Popover open={supportOpen} onOpenChange={setSupportOpen}>
@@ -374,10 +395,10 @@ export default function Create() {
                                                 role="combobox"
                                                 aria-expanded={supportOpen}
                                                 className="w-full justify-between"
-                                                disabled={processing}
+                                                disabled={processing || isSupport}
                                             >
-                                                {data.support_id
-                                                    ? Array.isArray(supports) ? supports.find((s: any) => s.id === Number(data.support_id))?.name : null
+                                                {data.support_id && Array.isArray(supports)
+                                                    ? supports.find((s: any) => s.id === Number(data.support_id))?.name || 'Seleccionar soporte técnico...'
                                                     : 'Seleccionar soporte técnico...'}
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
@@ -388,22 +409,26 @@ export default function Create() {
                                                 <CommandList>
                                                     <CommandEmpty>No se encontró soporte técnico.</CommandEmpty>
                                                     <CommandGroup>
-                                                        <CommandItem
-                                                            value=""
-                                                            onSelect={() => {
-                                                                setData('support_id', '');
-                                                                setSupportOpen(false);
-                                                            }}
-                                                        >
-                                                            <Check
-                                                                className={cn(
-                                                                    'mr-2 h-4 w-4',
-                                                                    data.support_id === '' ? 'opacity-100' : 'opacity-0'
-                                                                )}
-                                                            />
-                                                            Sin asignar
-                                                        </CommandItem>
-                                                        {Array.isArray(supports) && supports.map((support: any) => (
+                                                        {!isSupport && (
+                                                            <CommandItem
+                                                                value=""
+                                                                onSelect={() => {
+                                                                    setData('support_id', '');
+                                                                    setSupportOpen(false);
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        'mr-2 h-4 w-4',
+                                                                        data.support_id === '' ? 'opacity-100' : 'opacity-0'
+                                                                    )}
+                                                                />
+                                                                Sin asignar
+                                                            </CommandItem>
+                                                        )}
+                                                        {Array.isArray(supports) && supports
+                                                            .filter((support: any) => !isSupport || support.email === auth?.user?.email)
+                                                            .map((support: any) => (
                                                             <CommandItem
                                                                 key={support.id}
                                                                 value={support.name}
@@ -448,7 +473,7 @@ export default function Create() {
                             {data.subject !== 'Solicitud de Toner' && (
                                 <>
                                     <div className="flex flex-col gap-1">
-                                        <Label htmlFor="brand">Marca</Label>
+                                        <Label htmlFor="brand">Marca *</Label>
                                         <Input
                                             id="brand"
                                             value={data.brand}
@@ -459,7 +484,7 @@ export default function Create() {
                                     </div>
 
                                     <div className="flex flex-col gap-1">
-                                        <Label htmlFor="model">Modelo</Label>
+                                        <Label htmlFor="model">Modelo *</Label>
                                         <Input
                                             id="model"
                                             value={data.model}
@@ -470,7 +495,7 @@ export default function Create() {
                                     </div>
 
                                     <div className="flex flex-col gap-1">
-                                        <Label htmlFor="serial">Serial</Label>
+                                        <Label htmlFor="serial">Serial *</Label>
                                         <Input
                                             id="serial"
                                             value={data.serial}
@@ -623,11 +648,11 @@ export default function Create() {
 
                         </CardContent>
 
-                        <CardFooter className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={handleCancel}>
+                        <CardFooter className="flex flex-col sm:flex-row sm:justify-end gap-2 p-4 sm:p-6">
+                            <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={processing}>
+                            <Button type="submit" disabled={processing} className="w-full sm:w-auto">
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />

@@ -149,11 +149,14 @@ class TicketController extends Controller
         }
 
         try {
+            // Verificar si el usuario tiene rol comercial (case insensitive)
+            $isComercial = $user->hasRole('comercial') || $user->hasRole('Comercial');
+            
             // Validación base
             $rules = [
-                'customer_id' => 'required|exists:customers,id',
+                'customer_id' => $isComercial ? 'nullable|exists:customers,id' : 'required|exists:customers,id',
                 'support_id' => 'nullable|exists:supports,id',
-                'subject' => 'required|in:Atascos,Manchas,Configuración,Código de Error,Solicitud de Toner,Servicio de Ingeniería,Otros',
+                'subject' => 'required|in:Mantenimiento Preventivo,Manchas,Atascos,Configuración ó Escaner,Código de Error,Remoto,Servicio de Ingeniería,Solicitud de Toner,Otros',
                 'description' => 'required|string',
                 'phone' => 'required|string|max:20',
                 'nombre_contacto' => 'required|string|max:255',
@@ -298,7 +301,7 @@ class TicketController extends Controller
             // Validación base
             $rules = [
                 'support_id' => 'nullable|exists:supports,id',
-                'subject' => 'required|in:Atascos,Manchas,Configuración,Código de Error,Solicitud de Toner,Servicio de Ingeniería,Otros',
+                'subject' => 'required|in:Mantenimiento Preventivo,Manchas,Atascos,Configuración ó Escaner,Código de Error,Remoto,Servicio de Ingeniería,Solicitud de Toner,Otros',
                 'description' => 'required|string|min:1',
                 'phone' => 'required|string|max:20',
                 'address' => 'required|string|max:255',

@@ -17,10 +17,10 @@ class AdminUserSeeder extends Seeder
     {
         // Crear usuario administrador
         $adminUser = User::firstOrCreate(
-            ['email' => 'admin@tickets.com'],
+            ['email' => 'soporte.tesltda@gmail.com'],
             [
                 'name' => 'Administrador',
-                'password' => Hash::make('admin123'),
+                'password' => Hash::make('Tesltda123'),
                 'email_verified_at' => now(),
             ]
         );
@@ -33,7 +33,7 @@ class AdminUserSeeder extends Seeder
         }
 
         $this->command->info('Usuario administrador creado:');
-        $this->command->info('Email: admin@tickets.com');
-        $this->command->info('Password: admin123');
+        $this->command->info('Email: soporte.tesltda@gmail.com');
+        $this->command->info('Password: Tesltda123');
     }
 }

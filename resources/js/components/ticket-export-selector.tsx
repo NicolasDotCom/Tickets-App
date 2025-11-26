@@ -181,16 +181,16 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                         Seleccionar Tickets
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-6xl h-[85vh] flex flex-col">
+                <DialogContent className="max-w-6xl max-h-[90vh] sm:h-[85vh] flex flex-col w-[95vw]">
                     <DialogHeader className="pb-3 shrink-0">
-                        <DialogTitle>Seleccionar Tickets para Exportar</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="text-lg sm:text-xl">Seleccionar Tickets para Exportar</DialogTitle>
+                        <DialogDescription className="text-xs sm:text-sm">
                             Selecciona los tickets que deseas exportar a CSV. Puedes usar los filtros para encontrar tickets específicos.
                         </DialogDescription>
                     </DialogHeader>
 
                     {/* Filtros */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 py-3 border-b shrink-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 py-3 border-b shrink-0">
                         <div className="lg:col-span-1">
                             <Label htmlFor="search" className="text-xs font-medium">Buscar</Label>
                             <div className="relative mt-1">
@@ -277,7 +277,7 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                             <div className="p-2">
                                 <div className="space-y-2">
                                     {filteredTickets.map((ticket) => (
-                                        <div key={ticket.id} className="flex items-start space-x-2 p-2 border rounded-lg hover:bg-muted/50 transition-colors">
+                                        <div key={ticket.id} className="flex items-start space-x-2 p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                                             <Checkbox
                                                 id={`ticket-${ticket.id}`}
                                                 checked={selectedTickets.includes(ticket.id)}
@@ -285,8 +285,8 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                                                 className="mt-0.5 shrink-0"
                                             />
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between gap-2 mb-1">
-                                                    <div className="flex items-center gap-2">
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-1">
+                                                    <div className="flex items-center gap-2 flex-wrap">
                                                         <Label htmlFor={`ticket-${ticket.id}`} className="font-medium cursor-pointer text-sm">
                                                             #{ticket.id.toString().padStart(4, '0')}
                                                         </Label>
@@ -298,10 +298,10 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                                                         {ticket.created_at ? ticket.created_at.substring(0, 10).split('-').reverse().join('/') : 'Sin fecha'}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs text-muted-foreground mb-1 line-clamp-1">
+                                                <p className="text-xs text-muted-foreground mb-1 line-clamp-2">
                                                     {ticket.description || 'Sin descripción'}
                                                 </p>
-                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 text-[10px] text-muted-foreground">
+                                                <div className="flex flex-col sm:grid sm:grid-cols-3 gap-1 text-[10px] text-muted-foreground">
                                                     <span className="truncate">Cliente: {ticket.customer?.name || 'N/A'}</span>
                                                     <span className="truncate">Técnico: {ticket.support?.name || 'Sin asignar'}</span>
                                                     <span className="truncate">Equipo: {ticket.brand} {ticket.model}</span>
@@ -320,13 +320,13 @@ export default function TicketExportSelector({ tickets }: TicketExportSelectorPr
                         </div>
                     </div>
 
-                    <DialogFooter className="pt-3 border-t shrink-0">
-                        <Button variant="outline" onClick={() => setIsOpen(false)} className="h-9">
+                    <DialogFooter className="pt-3 border-t shrink-0 flex-col sm:flex-row gap-2">
+                        <Button variant="outline" onClick={() => setIsOpen(false)} className="h-9 w-full sm:w-auto">
                             Cancelar
                         </Button>
-                        <Button onClick={handleExport} disabled={selectedTickets.length === 0} className="h-9">
+                        <Button onClick={handleExport} disabled={selectedTickets.length === 0} className="h-9 w-full sm:w-auto">
                             <Download className="w-4 h-4 mr-2" />
-                            Exportar {selectedTickets.length} Tickets
+                            Exportar {selectedTickets.length}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

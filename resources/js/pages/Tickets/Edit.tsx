@@ -43,12 +43,14 @@ const statuses = [
 ];
 
 const subjects = [
-    { value: 'Atascos', label: 'Atascos' },
+    { value: 'Mantenimiento Preventivo', label: 'Mantenimiento Preventivo' },
     { value: 'Manchas', label: 'Manchas' },
-    { value: 'Configuración', label: 'Configuración' },
+    { value: 'Atascos', label: 'Atascos' },
+    { value: 'Configuración ó Escaner', label: 'Configuración ó Escaner' },
     { value: 'Código de Error', label: 'Código de Error' },
-    { value: 'Solicitud de Toner', label: 'Solicitud de Toner' },
+    { value: 'Remoto', label: 'Remoto' },
     { value: 'Servicio de Ingeniería', label: 'Servicio de Ingeniería' },
+    { value: 'Solicitud de Toner', label: 'Solicitud de Toner' },
     { value: 'Otros', label: 'Otros' },
 ];
 
@@ -216,12 +218,12 @@ export default function Edit() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Editar Tickets" />
-            <div className="flex flex-col gap-4 p-4">
-                <h1 className="text-2xl font-bold">Editar Ticket</h1>
+            <div className="flex flex-col gap-3 sm:gap-4 p-2 sm:p-4">
+                <h1 className="text-xl sm:text-2xl font-bold">Editar Ticket</h1>
                 <Card>
                     <form onSubmit={handleSubmit}>
-                        <CardHeader></CardHeader>
-                        <CardContent className="flex flex-col gap-4">
+                        <CardHeader className="p-4 sm:p-6"></CardHeader>
+                        <CardContent className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-6">
 
                             <div className="flex flex-col gap-1">
                                 <Label htmlFor="customer">Cliente</Label>
@@ -477,11 +479,11 @@ export default function Edit() {
 
                         </CardContent>
 
-                        <CardFooter className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={handleCancel}>
+                        <CardFooter className="flex flex-col sm:flex-row sm:justify-end gap-2 p-4 sm:p-6">
+                            <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={processing}>
+                            <Button type="submit" disabled={processing} className="w-full sm:w-auto">
                                 {processing ? (
                                     <div className="flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" />

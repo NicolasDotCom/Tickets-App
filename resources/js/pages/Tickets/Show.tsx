@@ -233,24 +233,25 @@ export default function Show() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Ticket #${ticket.id}`} />
             
-            <div className="flex flex-col gap-6 p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-4 sm:gap-6 p-2 sm:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => router.visit(route('tickets.index'))}
+                            className="flex-shrink-0"
                         >
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Volver
                         </Button>
-                        <h1 className="text-2xl font-bold">Ticket #{ticket.id}</h1>
+                        <h1 className="text-lg sm:text-2xl font-bold">Ticket #{ticket.id}</h1>
                         <Badge variant={getStatusBadgeVariant(ticket.status)}>
                             {getStatusLabel(ticket.status)}
                         </Badge>
                     </div>
                     
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                         {auth?.roles?.includes('support') && (
                             <Button 
                                 variant="default"
@@ -271,13 +272,13 @@ export default function Show() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     {/* Información del Ticket */}
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Información del Ticket</CardTitle>
+                        <CardHeader className="p-4 sm:p-6">
+                            <CardTitle className="text-base sm:text-lg">Información del Ticket</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
                             <div>
                                 <label className="text-sm font-medium text-gray-500">Asunto</label>
                                 <p className="text-lg font-semibold">{ticket.subject}</p>
@@ -361,18 +362,18 @@ export default function Show() {
                                 <p className="text-lg">{ticket.address}</p>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">Marca</label>
-                                    <p className="text-lg">{ticket.brand}</p>
+                                    <label className="text-xs sm:text-sm font-medium text-gray-500">Marca</label>
+                                    <p className="text-base sm:text-lg">{ticket.brand}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">Modelo</label>
-                                    <p className="text-lg">{ticket.model}</p>
+                                    <label className="text-xs sm:text-sm font-medium text-gray-500">Modelo</label>
+                                    <p className="text-base sm:text-lg">{ticket.model}</p>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-500">Serial</label>
-                                    <p className="text-lg">{ticket.serial}</p>
+                                    <label className="text-xs sm:text-sm font-medium text-gray-500">Serial</label>
+                                    <p className="text-base sm:text-lg">{ticket.serial}</p>
                                 </div>
                             </div>
                             
