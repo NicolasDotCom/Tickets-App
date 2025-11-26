@@ -53,7 +53,7 @@ export default function Create() {
     // Obtener el ID del soporte técnico si el usuario tiene rol support
     const getUserSupportId = () => {
         if (isSupport && auth?.user?.email && Array.isArray(supports)) {
-            const userSupport = supports.find((support: any) => support.email === auth.user.email);
+            const userSupport = supports.find((support: any) => support.email === auth.user?.email);
             return userSupport ? String(userSupport.id) : '';
         }
         return '';

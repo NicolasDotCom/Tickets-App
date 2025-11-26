@@ -75,6 +75,7 @@ export interface Ticket {
     id:number;
     customer_id: number;
     support_id: number | null;
+    subject: string;
     description: string;
     phone: string;
     address: string;
@@ -121,6 +122,8 @@ export interface UserWithRoles {
     id: number;
     name: string;
     email: string;
+    email_verified_at: string | null;
+    created_at: string;
     roles: {id:number, name: string}[];
 }
 

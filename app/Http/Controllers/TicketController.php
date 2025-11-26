@@ -452,7 +452,11 @@ class TicketController extends Controller
             return redirect()->back()->with('error', 'El archivo no existe.');
         }
 
-        return Storage::disk('public')->download($document->file_path, $document->original_name);
+        $file = Storage::disk('public')->get($document->file_path);
+        
+        return response($file, 200)
+            ->header('Content-Type', $document->mime_type)
+            ->header('Content-Disposition', 'attachment; filename="' . $document->original_name . '"');
     }
 
     /**
@@ -584,6 +588,10 @@ class TicketController extends Controller
             return redirect()->back()->with('error', 'El archivo no existe.');
         }
 
-        return Storage::disk('public')->download($attachment->file_path, $attachment->file_name);
+        $file = Storage::disk('public')->get($attachment->file_path);
+        
+        return response($file, 200)
+            ->header('Content-Type', $attachment->mime_type)
+            ->header('Content-Disposition', 'attachment; filename="' . $attachment->file_name . '"');
     }
 }
