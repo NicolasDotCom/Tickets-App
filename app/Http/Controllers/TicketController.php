@@ -448,13 +448,11 @@ class TicketController extends Controller
             }
         }
 
-        $filePath = storage_path('app/public/' . $document->file_path);
-        
-        if (!file_exists($filePath)) {
+        if (!Storage::disk('public')->exists($document->file_path)) {
             return redirect()->back()->with('error', 'El archivo no existe.');
         }
 
-        return response()->download($filePath, $document->original_name);
+        return Storage::disk('public')->download($document->file_path, $document->original_name);
     }
 
     /**
@@ -582,12 +580,10 @@ class TicketController extends Controller
             }
         }
 
-        $filePath = storage_path('app/public/' . $attachment->file_path);
-        
-        if (!file_exists($filePath)) {
+        if (!Storage::disk('public')->exists($attachment->file_path)) {
             return redirect()->back()->with('error', 'El archivo no existe.');
         }
 
-        return response()->download($filePath, $attachment->file_name);
+        return Storage::disk('public')->download($attachment->file_path, $attachment->file_name);
     }
 }
