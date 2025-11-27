@@ -55,8 +55,8 @@ class TicketController extends Controller
                 $query->whereRaw('1 = 0');
             }
         }
-        // Si el usuario es cliente, solo mostrar tickets que él ha creado
-        elseif ($user && $user->hasRole('customer')) {
+        // Si el usuario es cliente o comercial, solo mostrar tickets que él ha creado
+        elseif ($user && ($user->hasRole('customer') || $user->hasRole('comercial'))) {
             // Buscar el registro de customer asociado al usuario autenticado
             $customer = Customer::where('email', $user->email)->first();
             if ($customer) {
