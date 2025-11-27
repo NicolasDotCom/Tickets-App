@@ -101,7 +101,7 @@ class TicketController extends Controller
             }
             
             $customers = collect([$customer]);
-            $supports = Support::select('id', 'name')->get();
+            $supports = Support::select('id', 'name', 'email')->get();
             $companies = collect([$customer->name]);
 
             return Inertia::render('Tickets/Create', [
@@ -115,7 +115,7 @@ class TicketController extends Controller
 
         // Para administradores y soporte, mostrar todos los datos
         $customers = Customer::select('id', 'name', 'name_user')->get();
-        $supports = Support::select('id', 'name')->get();
+        $supports = Support::select('id', 'name', 'email')->get();
         // Cambiar para que companies sea el campo 'name' (nombre de la empresa)
         $companies = Customer::select('name')->distinct()->pluck('name');
 

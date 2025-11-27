@@ -50,19 +50,10 @@ export default function Create() {
     // Verificar si el usuario tiene rol de soporte técnico
     const isSupport = auth?.user?.roles?.some((role: any) => role.name.toLowerCase() === 'support');
 
-    // Obtener el ID del soporte técnico si el usuario tiene rol support
-    const getUserSupportId = () => {
-        if (isSupport && auth?.user?.email && Array.isArray(supports)) {
-            const userSupport = supports.find((support: any) => support.email === auth.user?.email);
-            return userSupport ? String(userSupport.id) : '';
-        }
-        return '';
-    };
-
     const { data, setData, post, processing, errors } = useForm({
         company_name: '', // Cambiar a company_name para el nombre de la empresa
         customer_id: '',
-        support_id: getUserSupportId(),
+        support_id: '',
         subject: '',
         description: '',
         phone: '',
@@ -74,6 +65,35 @@ export default function Create() {
         status: 'Open',
         documents: [] as File[],
     });
+
+    // Obtener array de soportes (manejar paginación y array simple)
+    const supportsArray = Array.isArray(supports) 
+        ? supports 
+        : supports?.data || [];
+
+    // Filtrar lista de soportes según el rol del usuario
+    const filteredSupports = isSupport 
+        ? supportsArray.filter((support: any) => support.email === auth?.user?.email)
+        : supportsArray;
+
+    console.log('Debug Soporte:', {
+        isSupport,
+        userEmail: auth?.user?.email,
+        supportsType: Array.isArray(supports) ? 'array' : 'paginated',
+        supportsArray,
+        filteredSupports
+    });
+
+    // Auto-asignar soporte técnico cuando el usuario tiene rol support
+    useEffect(() => {
+        if (isSupport && auth?.user?.email && filteredSupports.length > 0) {
+            const userSupport = filteredSupports[0]; // Ya está filtrado, tomar el primero
+            if (userSupport) {
+                console.log('Asignando soporte:', userSupport);
+                setData('support_id', String(userSupport.id));
+            }
+        }
+    }, [isSupport, supportsArray, auth?.user?.email]);
 
     const [companyOpen, setCompanyOpen] = useState(false);
     const [customerOpen, setCustomerOpen] = useState(false);
@@ -395,7 +415,7 @@ export default function Create() {
                                                 role="combobox"
                                                 aria-expanded={supportOpen}
                                                 className="w-full justify-between"
-                                                disabled={processing || isSupport}
+                                                disabled={processing}
                                             >
                                                 {data.support_id && Array.isArray(supports)
                                                     ? supports.find((s: any) => s.id === Number(data.support_id))?.name || 'Seleccionar soporte técnico...'
@@ -426,9 +446,7 @@ export default function Create() {
                                                                 Sin asignar
                                                             </CommandItem>
                                                         )}
-                                                        {Array.isArray(supports) && supports
-                                                            .filter((support: any) => !isSupport || support.email === auth?.user?.email)
-                                                            .map((support: any) => (
+                                                        {filteredSupports.map((support: any) => (
                                                             <CommandItem
                                                                 key={support.id}
                                                                 value={support.name}

@@ -33,7 +33,7 @@ const getRoleBadgeColor = (roleName: string) => {
 
 export function RoleMobileCard({ user, currentRole, roles, onRoleChange }: RoleMobileCardProps) {
     return (
-        <div className="border rounded-lg p-5 bg-white shadow-sm">
+        <div className="border-4 border-gray-300 rounded-lg p-5 bg-white shadow-sm">
             <div className="mb-4">
                 <h3 className="font-semibold text-lg text-gray-900 mb-1">{user.name}</h3>
                 <p className="text-sm text-gray-600 break-all">{user.email}</p>

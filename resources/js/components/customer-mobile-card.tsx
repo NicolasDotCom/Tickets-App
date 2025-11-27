@@ -7,8 +7,8 @@ interface CustomerMobileCardProps {
 
 export function CustomerMobileCard({ customer, onViewDetails }: CustomerMobileCardProps) {
     return (
-        <div 
-            className="border rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        <div
+            className="border-4 border-gray-300 rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => onViewDetails(customer)}
         >
             <div className="flex items-start justify-between mb-4">

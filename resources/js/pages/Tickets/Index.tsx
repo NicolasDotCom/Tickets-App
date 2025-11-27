@@ -39,11 +39,28 @@ export default function Index() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [mobileSearchTerm, setMobileSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    
+    // Filtros para NO soporte
+    const [ticketIdFilter, setTicketIdFilter] = useState('');
+    const [clientFilter, setClientFilter] = useState<string>('all');
+    const [supportFilter, setSupportFilter] = useState<string>('all');
+    const [brandFilter, setBrandFilter] = useState<string>('all');
+    const [statusFilterNonSupport, setStatusFilterNonSupport] = useState<string>('all');
 
     const { tickets, auth } = usePage<PageProps>().props;
-    console.log(auth);
 
     const isSupportRole = auth?.roles?.includes('support');
+    
+    // Obtener listas únicas para filtros
+    const uniqueClients = Array.from(
+        new Map(tickets.data.filter((t: Ticket) => t.customer).map((t: Ticket) => [t.customer!.id, t.customer!])).values()
+    );
+    
+    const uniqueSupports = Array.from(
+        new Map(tickets.data.filter((t: Ticket) => t.support).map((t: Ticket) => [t.support!.id, t.support!])).values()
+    );
+    
+    const uniqueBrands = Array.from(new Set(tickets.data.map((t: Ticket) => t.brand).filter(Boolean)));
 
 
     const getStatus = (status: Ticket['status']) : 'open' | 'progress' | 'closed' | 'outline' => {
@@ -209,9 +226,32 @@ export default function Index() {
         setIsDetailModalOpen(true);
     };
 
+    // Función para filtrar tickets
+    const applyFilters = (ticketsList: Ticket[]) => {
+        return ticketsList.filter((ticket: Ticket) => {
+            // Filtros para soporte técnico
+            if (isSupportRole) {
+                if (statusFilter !== 'all' && ticket.status !== statusFilter) return false;
+                return true;
+            }
+            
+            // Filtros para NO soporte técnico
+            if (ticketIdFilter && !ticket.id.toString().includes(ticketIdFilter)) return false;
+            if (clientFilter !== 'all' && ticket.customer?.id.toString() !== clientFilter) return false;
+            if (supportFilter !== 'all') {
+                if (supportFilter === 'unassigned' && ticket.support_id) return false;
+                if (supportFilter !== 'unassigned' && ticket.support_id?.toString() !== supportFilter) return false;
+            }
+            if (brandFilter !== 'all' && ticket.brand !== brandFilter) return false;
+            if (statusFilterNonSupport !== 'all' && ticket.status !== statusFilterNonSupport) return false;
+            
+            return true;
+        });
+    };
+
     // Filtrar tickets para vista móvil
     const filteredMobileTickets = tickets.data.filter((ticket: Ticket) => {
-        // Filtro por búsqueda
+        // Filtro por búsqueda móvil
         if (mobileSearchTerm) {
             const searchLower = mobileSearchTerm.toLowerCase();
             const matchesSearch = (
@@ -224,12 +264,8 @@ export default function Index() {
             if (!matchesSearch) return false;
         }
 
-        // Filtro por estado (solo para soporte técnico)
-        if (isSupportRole && statusFilter !== 'all') {
-            return ticket.status === statusFilter;
-        }
-
-        return true;
+        // Aplicar filtros adicionales
+        return applyFilters([ticket]).length > 0;
     });
 
     return (
@@ -247,7 +283,7 @@ export default function Index() {
 
                 {/* Vista Desktop - Tabla */}
                 <div className="hidden md:block space-y-4">
-                    {/* Filtro por estado (solo para soporte técnico) */}
+                    {/* Filtros para soporte técnico */}
                     {isSupportRole && (
                         <div className="flex items-center gap-3 p-4 rounded-lg">
                             <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
@@ -259,32 +295,110 @@ export default function Index() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todos los estados</SelectItem>
-                                    <SelectItem value="Open">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                            Abierto
-                                        </div>
-                                    </SelectItem>
-                                    <SelectItem value="In Progress">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                                            En Progreso
-                                        </div>
-                                    </SelectItem>
-                                    <SelectItem value="Closed">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                            Cerrado
-                                        </div>
-                                    </SelectItem>
+                                    <SelectItem value="Open">Abierto</SelectItem>
+                                    <SelectItem value="In Progress">En Progreso</SelectItem>
+                                    <SelectItem value="Closed">Cerrado</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     )}
 
+                    {/* Filtros específicos para NO soporte técnico */}
+                    {!isSupportRole && (
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-lg">
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">
+                                    # Ticket
+                                </label>
+                                <Input
+                                    placeholder="123"
+                                    value={ticketIdFilter}
+                                    onChange={(e) => setTicketIdFilter(e.target.value)}
+                                    type="number"
+                                    className="h-9"
+                                />
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">
+                                    Cliente
+                                </label>
+                                <Select value={clientFilter} onValueChange={setClientFilter}>
+                                    <SelectTrigger className="h-9">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos</SelectItem>
+                                        {uniqueClients.map((client: any) => (
+                                            <SelectItem key={client.id} value={client.id.toString()}>
+                                                {client.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">
+                                    Soporte Técnico
+                                </label>
+                                <Select value={supportFilter} onValueChange={setSupportFilter}>
+                                    <SelectTrigger className="h-9">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos</SelectItem>
+                                        <SelectItem value="unassigned">Sin asignar</SelectItem>
+                                        {uniqueSupports.map((support: any) => (
+                                            <SelectItem key={support.id} value={support.id.toString()}>
+                                                {support.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">
+                                    Marca
+                                </label>
+                                <Select value={brandFilter} onValueChange={setBrandFilter}>
+                                    <SelectTrigger className="h-9">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todas</SelectItem>
+                                        {uniqueBrands.map((brand: string) => (
+                                            <SelectItem key={brand} value={brand}>
+                                                {brand}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">
+                                    Estado
+                                </label>
+                                <Select value={statusFilterNonSupport} onValueChange={setStatusFilterNonSupport}>
+                                    <SelectTrigger className="h-9">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos</SelectItem>
+                                        <SelectItem value="Open">Abierto</SelectItem>
+                                        <SelectItem value="In Progress">En Progreso</SelectItem>
+                                        <SelectItem value="Closed">Cerrado</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    )}
+
                     <DataTable
                         columns={columns}
-                        data={statusFilter === 'all' ? tickets.data : tickets.data.filter((ticket: Ticket) => ticket.status === statusFilter)}
+                        data={applyFilters(tickets.data)}
                         pagination={{
                             from: tickets.from,
                             to: tickets.to,
@@ -292,56 +406,125 @@ export default function Index() {
                             links: tickets.links,
                             onPageChange: handlePageChange,
                         }}
-                        onSearch={handleSearch}
-                        searchPlaceholder='Buscar...'
+                        onSearch={isSupportRole ? handleSearch : undefined}
+                        searchPlaceholder={isSupportRole ? 'Buscar...' : undefined}
                     />
                 </div>
 
                 {/* Vista Móvil - Cards */}
                 <div className="md:hidden space-y-4">
-                    {/* Buscador móvil */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                            placeholder="Buscar tickets..."
-                            value={mobileSearchTerm}
-                            onChange={(e) => setMobileSearchTerm(e.target.value)}
-                            className="pl-10"
-                        />
-                    </div>
+                    {/* Buscador móvil (solo para soporte) */}
+                    {isSupportRole && (
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                                placeholder="Buscar tickets..."
+                                value={mobileSearchTerm}
+                                onChange={(e) => setMobileSearchTerm(e.target.value)}
+                                className="pl-10"
+                            />
+                        </div>
+                    )}
 
                     {/* Filtro por estado (solo para soporte técnico) */}
                     {isSupportRole && (
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                                Filtrar por Estado
+                        <div className="flex flex-col gap-2 p-3 rounded-lg">
+                            <label className="text-xs font-semibold text-gray-700">
+                                Estado
                             </label>
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Todos los estados</SelectItem>
-                                    <SelectItem value="Open">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                            Abierto
-                                        </div>
-                                    </SelectItem>
-                                    <SelectItem value="In Progress">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                                            En Progreso
-                                        </div>
-                                    </SelectItem>
-                                    <SelectItem value="Closed">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                            Cerrado
-                                        </div>
-                                    </SelectItem>
+                                    <SelectItem value="all">Todos</SelectItem>
+                                    <SelectItem value="Open">Abierto</SelectItem>
+                                    <SelectItem value="In Progress">En Progreso</SelectItem>
+                                    <SelectItem value="Closed">Cerrado</SelectItem>
                                 </SelectContent>
                             </Select>
+                        </div>
+                    )}
+
+                    {/* Filtros específicos para NO soporte técnico (móvil) */}
+                    {!isSupportRole && (
+                        <div className="space-y-3 p-3 rounded-lg">
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700"># Ticket</label>
+                                <Input
+                                    placeholder="123"
+                                    value={ticketIdFilter}
+                                    onChange={(e) => setTicketIdFilter(e.target.value)}
+                                    type="number"
+                                />
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">Cliente</label>
+                                <Select value={clientFilter} onValueChange={setClientFilter}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos</SelectItem>
+                                        {uniqueClients.map((client: any) => (
+                                            <SelectItem key={client.id} value={client.id.toString()}>
+                                                {client.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">Soporte Técnico</label>
+                                <Select value={supportFilter} onValueChange={setSupportFilter}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos</SelectItem>
+                                        <SelectItem value="unassigned">Sin asignar</SelectItem>
+                                        {uniqueSupports.map((support: any) => (
+                                            <SelectItem key={support.id} value={support.id.toString()}>
+                                                {support.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">Marca</label>
+                                <Select value={brandFilter} onValueChange={setBrandFilter}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todas</SelectItem>
+                                        {uniqueBrands.map((brand: string) => (
+                                            <SelectItem key={brand} value={brand}>
+                                                {brand}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-1.5">
+                                <label className="text-xs font-semibold text-gray-700">Estado</label>
+                                <Select value={statusFilterNonSupport} onValueChange={setStatusFilterNonSupport}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Todos</SelectItem>
+                                        <SelectItem value="Open">Abierto</SelectItem>
+                                        <SelectItem value="In Progress">En Progreso</SelectItem>
+                                        <SelectItem value="Closed">Cerrado</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                     )}
 

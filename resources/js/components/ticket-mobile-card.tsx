@@ -39,7 +39,7 @@ const getStatusLabel = (status: string) => {
 export function TicketMobileCard({ ticket, onViewDetails, canEdit = false }: TicketMobileCardProps) {
     return (
         <div 
-            className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            className="border-4 border-gray-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer mb-3"
             onClick={() => onViewDetails(ticket)}
         >
             <div className="flex items-center justify-between mb-3">
